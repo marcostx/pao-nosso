@@ -1,11 +1,13 @@
 """
 Model: Doacao
 """
+import enum
 import uuid
 from datetime import datetime
-from sqlalchemy import Column, String, Text, DateTime, Enum, Numeric, Date, Time, ForeignKey
+
+from sqlalchemy import Column, Date, DateTime, Enum, ForeignKey, Numeric, String, Text, Time
 from sqlalchemy.orm import relationship
-import enum
+
 from extensions import db
 
 

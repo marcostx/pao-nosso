@@ -69,7 +69,11 @@ jobs:
     - name: Create test environment
       run: |
         cd backend
-        cp .env.example .env
+        echo "FLASK_APP=app.py" > .env
+        echo "FLASK_ENV=development" >> .env
+        echo "FLASK_DEBUG=True" >> .env
+        echo "DATABASE_URL=sqlite:///test.db" >> .env
+        echo "JWT_SECRET_KEY=test-secret-key" >> .env
     
     - name: Initialize database
       run: |

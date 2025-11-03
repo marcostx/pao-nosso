@@ -1,11 +1,13 @@
 """
 Model: Usuario
 """
+import enum
 import uuid
 from datetime import datetime
-from sqlalchemy import Column, String, DateTime, Enum
+
+from sqlalchemy import Column, DateTime, Enum, String
 from sqlalchemy.orm import relationship
-import enum
+
 from extensions import db
 
 

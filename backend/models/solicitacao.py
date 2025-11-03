@@ -1,11 +1,13 @@
 """
 Model: Solicitacao
 """
+import enum
 import uuid
 from datetime import datetime
-from sqlalchemy import Column, String, Text, DateTime, Enum, Date, Time, ForeignKey
+
+from sqlalchemy import Column, Date, DateTime, Enum, ForeignKey, String, Text, Time
 from sqlalchemy.orm import relationship
-import enum
+
 from extensions import db
 
 

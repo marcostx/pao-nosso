@@ -1,9 +1,9 @@
 """
 Extensões Flask (compartilhadas entre módulos)
 """
-from flask_sqlalchemy import SQLAlchemy
-from flask_jwt_extended import JWTManager
 from flask_cors import CORS
+from flask_jwt_extended import JWTManager
+from flask_sqlalchemy import SQLAlchemy
 
 # Inicializa extensões (sem app context)
 db = SQLAlchemy()

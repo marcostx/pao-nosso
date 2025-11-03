@@ -1,11 +1,13 @@
 """
 Model: Instituicao
 """
+import enum
 import uuid
 from datetime import datetime
-from sqlalchemy import Column, String, Text, Boolean, DateTime, Enum, Numeric, ForeignKey
+
+from sqlalchemy import Boolean, Column, DateTime, Enum, ForeignKey, Numeric, String, Text
 from sqlalchemy.orm import relationship
-import enum
+
 from extensions import db
 
 

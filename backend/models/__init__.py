@@ -1,11 +1,11 @@
 """
 Models package
 """
-from .usuario import Usuario
-from .instituicao import Instituicao
-from .doacao import Doacao
-from .solicitacao import Solicitacao
 from .dispositivo_fcm import DispositivoFCM
+from .doacao import Doacao
+from .instituicao import Instituicao
+from .solicitacao import Solicitacao
+from .usuario import Usuario
 
 __all__ = [
     'Usuario',
