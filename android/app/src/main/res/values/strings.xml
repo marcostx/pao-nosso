@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Pão Nosso</string>
+    
+    <!-- API Configuration -->
+    <!-- Para emulador Android, use 10.0.2.2 ao invés de localhost -->
+    <!-- Para dispositivo físico, use o IP da sua máquina na rede local -->
+    <string name="api_base_url">http://10.0.2.2:5000</string>
+    
+    <!-- Welcome Screen -->
+    <string name="welcome_title">Bem-vindo ao Pão Nosso</string>
+    <string name="welcome_subtitle">Conectando doadores e instituições</string>
+    <string name="btn_doador">Sou Doador</string>
+    <string name="btn_instituicao">Sou Instituição</string>
+    
+    <!-- Auth -->
+    <string name="login_title">Entrar</string>
+    <string name="register_title">Cadastrar</string>
+    <string name="email">Email</string>
+    <string name="password">Senha</string>
+    <string name="name">Nome</string>
+    <string name="phone">Telefone</string>
+    <string name="btn_login">Entrar</string>
+    <string name="btn_register">Cadastrar</string>
+    <string name="dont_have_account">Não tem conta? Cadastre-se</string>
+    <string name="already_have_account">Já tem conta? Entre</string>
+    
+    <!-- Common -->
+    <string name="error">Erro</string>
+    <string name="loading">Carregando…</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancelar</string>
+</resources>
+

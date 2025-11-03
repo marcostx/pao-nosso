@@ -8,36 +8,29 @@ venv/
 env/
 ENV/
 .venv
+
+# Flask
+instance/
+.webassets-cache
+
+# Database
 *.db
 *.sqlite
 *.sqlite3
 
-# Android
-*.apk
-*.ap_
-*.aab
-*.dex
-*.class
-.gradle/
-build/
-local.properties
-*.iml
-.idea/
-captures/
-.externalNativeBuild
-.cxx/
-
 # Environment
 .env
 
-# OS
-.DS_Store
-Thumbs.db
-
 # IDE
 .vscode/
+.idea/
 *.swp
 *.swo
 
 # Logs
 *.log
+
+# OS
+.DS_Store
+Thumbs.db
+
