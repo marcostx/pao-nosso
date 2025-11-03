@@ -1,0 +1,52 @@
+name: Documentation Check
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - '**.md'
+      - '.github/workflows/docs-check.yml'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - '**.md'
+
+jobs:
+  markdown-lint:
+    name: Lint Markdown Files
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Lint Markdown files
+      uses: actionshub/markdownlint@main
+      with:
+        path: '.'
+        ignore: 'node_modules backend/venv'
+    
+  link-check:
+    name: Check Broken Links
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Check links in markdown files
+      uses: gaurav-nelson/github-action-markdown-link-check@v1
+      with:
+        use-quiet-mode: 'yes'
+        config-file: '.github/markdown-link-check-config.json'
+    
+  spelling:
+    name: Check Spelling
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Check spelling
+      uses: rojopolis/spellcheck-github-actions@0.31.0
+      with:
+        config_path: .github/spellcheck-config.yml
+

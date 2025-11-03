@@ -1,0 +1,39 @@
+matrix:
+  - name: Markdown
+    aspell:
+      lang: pt_BR
+    dictionary:
+      encoding: utf-8
+    sources:
+      - '**/*.md'
+    pipeline:
+      - pyspelling.filters.markdown:
+      - pyspelling.filters.html:
+        comments: false
+        ignores:
+          - code
+          - pre
+    expect_match: false
+
+# Palavras específicas do projeto para ignorar
+project_words:
+  - Pão
+  - Nosso
+  - backend
+  - frontend
+  - Android
+  - app
+  - API
+  - REST
+  - Flask
+  - Kotlin
+  - SQLite
+  - JWT
+  - bcrypt
+  - Retrofit
+  - Gradle
+  - doacao
+  - doador
+  - instituicao
+  - solicitacao
+

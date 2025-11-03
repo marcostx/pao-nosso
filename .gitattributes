@@ -1,0 +1,78 @@
+# Git attributes for Pão Nosso project
+
+# Auto-detect text files
+* text=auto
+
+# Source code
+*.py text eol=lf
+*.kt text eol=lf
+*.kts text eol=lf
+*.java text eol=lf
+*.xml text eol=lf
+*.json text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.toml text eol=lf
+*.sh text eol=lf
+
+# Documentation
+*.md text eol=lf
+*.txt text eol=lf
+
+# Configuration
+*.ini text eol=lf
+*.cfg text eol=lf
+*.conf text eol=lf
+.env* text eol=lf
+.gitignore text eol=lf
+.gitattributes text eol=lf
+
+# Gradle
+*.gradle text eol=lf
+*.properties text eol=lf
+gradlew text eol=lf
+gradle-wrapper.properties text eol=lf
+
+# Binary files
+*.apk binary
+*.aab binary
+*.jar binary
+*.so binary
+*.db binary
+*.sqlite binary
+*.sqlite3 binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.tar binary
+*.gz binary
+*.7z binary
+*.exe binary
+*.dll binary
+
+# Archives
+*.tar.gz binary
+*.tgz binary
+
+# Exclude from exports
+.github export-ignore
+tests/ export-ignore
+.gitignore export-ignore
+.gitattributes export-ignore
+
+# Diff settings for specific files
+*.md diff=markdown
+*.py diff=python
+*.kt diff=kotlin
+*.xml diff=xml
+*.json diff=json
+
+# Merge strategies
+*.db merge=binary
+*.sqlite merge=binary
+

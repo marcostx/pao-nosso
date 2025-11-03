@@ -1,0 +1,38 @@
+# Auto-labeling configuration for PRs
+
+backend:
+  - backend/**/*
+
+android:
+  - android/**/*
+
+documentation:
+  - '**/*.md'
+  - docs/**/*
+
+dependencies:
+  - backend/requirements.txt
+  - android/app/build.gradle.kts
+  - android/build.gradle.kts
+
+tests:
+  - backend/tests/**/*
+  - android/app/src/test/**/*
+  - android/app/src/androidTest/**/*
+
+security:
+  - '**/auth.py'
+  - '**/authentication/**/*
+  - '**/*security*'
+
+models:
+  - backend/models/**/*
+
+api:
+  - backend/routes/**/*
+  - android/app/src/main/java/**/api/**/*
+
+ui:
+  - android/app/src/main/res/**/*
+  - android/app/src/main/java/**/ui/**/*
+
