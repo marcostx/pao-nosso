@@ -157,8 +157,6 @@ Este é um projeto em desenvolvimento ativo. Contribuições são bem-vindas!
 
 ## Licença
 
-[Defina a licença do projeto]
-
 ---
 
 **Desenvolvido para combater a fome no Brasil**

@@ -3,7 +3,6 @@ Script para inicializar o banco de dados
 """
 from app import create_app
 from extensions import db
-from models import DispositivoFCM, Doacao, Instituicao, Solicitacao, Usuario
 
 
 def init_database():
