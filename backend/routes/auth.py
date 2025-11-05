@@ -1,6 +1,7 @@
 """
 Authentication routes
 """
+
 import bcrypt
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
@@ -18,13 +19,13 @@ def register():
     """Registra um novo usuário"""
     try:
         data = request.get_json()
-        
+
         # Validações básicas
         required_fields = ["nome", "email", "senha", "telefone", "tipo"]
         for field in required_fields:
             if field not in data:
                 return jsonify({"error": f"Campo obrigatório: {field}"}), 400
-        
+
         # Valida email
         if not validate_email(data["email"]):
             return jsonify({"error": "Email inválido"}), 400
@@ -45,10 +46,8 @@ def register():
             return jsonify({"error": "Tipo de usuário inválido"}), 400
 
         # Hash da senha
-        senha_hash = bcrypt.hashpw(data["senha"].encode("utf-8"), bcrypt.gensalt()).decode(
-            "utf-8"
-        )
-        
+        senha_hash = bcrypt.hashpw(data["senha"].encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+
         # Cria novo usuário
         novo_usuario = Usuario(
             nome=data["nome"],
@@ -98,9 +97,7 @@ def login():
             return jsonify({"error": "Email ou senha incorretos"}), 401
 
         # Verifica senha
-        if not bcrypt.checkpw(
-            data["senha"].encode("utf-8"), usuario.senha_hash.encode("utf-8")
-        ):
+        if not bcrypt.checkpw(data["senha"].encode("utf-8"), usuario.senha_hash.encode("utf-8")):
             return jsonify({"error": "Email ou senha incorretos"}), 401
 
         # Gera token JWT
@@ -146,4 +143,3 @@ def get_current_user():
 def logout():
     """Realiza logout (apenas retorna mensagem de sucesso no MVP)"""
     return jsonify({"message": "Logout realizado com sucesso"}), 200
-

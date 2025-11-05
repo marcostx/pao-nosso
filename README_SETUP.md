@@ -220,6 +220,9 @@ cd android
 ./gradlew clean --refresh-dependencies
 ```
 
+### 5. App not showing in the simulator env (or device)
+- missing minimap images
+
 ## Status do MVP
 
 ### Implementado
@@ -250,20 +253,7 @@ cd android
 
 Em caso de dúvidas ou problemas:
 
-1. Verifique a documentação em `SPEC.md`
 2. Consulte os READMEs específicos:
    - `backend/README.md`
    - `android/README.md`
 3. Verifique os logs do servidor e do Logcat
-
-## Pronto!
-
-Se você chegou até aqui e conseguiu:
-1. Iniciar o backend
-2. Ver "Pão Nosso API está funcionando!" no health check
-3. Executar o app Android
-4. Ver "Conectado ao servidor" no app
-
-**Parabéns! O ambiente está configurado corretamente!**
-
-Agora você pode começar a desenvolver novas funcionalidades.

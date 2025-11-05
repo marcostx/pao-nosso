@@ -1,6 +1,7 @@
 """
 Health check routes
 """
+
 from datetime import datetime
 
 from flask import Blueprint, jsonify
@@ -28,4 +29,3 @@ def health_check():
 def ping():
     """Ping endpoint"""
     return jsonify({"message": "pong"}), 200
-

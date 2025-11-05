@@ -2,6 +2,7 @@
 Pão Nosso - Backend API
 Aplicação Flask principal
 """
+
 import os
 
 from flask import Flask, jsonify
@@ -63,7 +64,4 @@ if __name__ == "__main__":
 
     # Inicia servidor
     print(f"🚀 Servidor rodando em http://{app.config['HOST']}:{app.config['PORT']}")
-    app.run(
-        host=app.config["HOST"], port=app.config["PORT"], debug=app.config["DEBUG"]
-    )
-
+    app.run(host=app.config["HOST"], port=app.config["PORT"], debug=app.config["DEBUG"])
