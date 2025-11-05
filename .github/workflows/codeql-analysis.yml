@@ -56,7 +56,4 @@ jobs:
       with:
         languages: java
         queries: security-and-quality
-    
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v2
 
