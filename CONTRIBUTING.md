@@ -10,7 +10,7 @@ Este projeto adere a um código de conduta. Ao participar, você concorda em man
 
 ### Reportando Bugs
 
-1. Verifique se o bug já foi reportado nas [Issues](https://github.com/seu-usuario/pao-nosso/issues)
+1. Verifique se o bug já foi reportado nas [Issues](https://github.com/marcostx/pao-nosso/issues)
 2. Se não, crie uma nova issue usando o template de Bug Report
 3. Inclua o máximo de detalhes possível
 4. Adicione labels apropriadas

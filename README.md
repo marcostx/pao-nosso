@@ -73,7 +73,7 @@ Veja o guia detalhado em [`README_SETUP.md`](README_SETUP.md)
 
 ## Documentação
 
-- [**SPEC.md**](SPEC.md) - Especificação técnica completa
+- [**SPEC.md**](https://github.com/marcostx/pao-nosso/blob/main/SPEC.md) - Especificação técnica completa
 - [**README_SETUP.md**](README_SETUP.md) - Guia de configuração passo a passo
 - [**backend/README.md**](backend/README.md) - Documentação do backend
 - [**android/README.md**](android/README.md) - Documentação do Android

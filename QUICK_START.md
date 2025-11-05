@@ -203,6 +203,7 @@ curl http://localhost:5000/health
 **Solução:**
 ```bash
 cd android
+gradle wrapper  # Gera o gradlew
 ./gradlew clean --refresh-dependencies
 ```
 
@@ -210,7 +211,7 @@ cd android
 
 ## Resumo Visual
 
-```
+``` 
 ┌─────────────────────────────────────────────────────────┐
 │                                                         │
 │  TERMINAL 1                    ANDROID STUDIO          │
@@ -248,7 +249,7 @@ Agora que está tudo funcionando, você pode:
    - Android: `android/app/src/main/java/com/paonosso/app/MainActivity.kt`
 
 2. **Ler a documentação:**
-   - [`SPEC.md`](SPEC.md) - Especificação completa
+   - [`SPEC.md`](https://github.com/marcostx/pao-nosso/blob/main/SPEC.md) - Especificação completa
    - [`README_SETUP.md`](README_SETUP.md) - Guia detalhado
 
 3. **Começar a desenvolver:**
