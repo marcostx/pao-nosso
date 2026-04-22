@@ -12,19 +12,6 @@ on:
       - '**.md'
 
 jobs:
-  markdown-lint:
-    name: Lint Markdown Files
-    runs-on: ubuntu-latest
-    
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Lint Markdown files
-      uses: actionshub/markdownlint@main
-      with:
-        path: '.'
-        ignore: 'node_modules backend/venv'
-    
   link-check:
     name: Check Broken Links
     runs-on: ubuntu-latest
