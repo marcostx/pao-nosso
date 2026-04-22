@@ -3,6 +3,7 @@ Tests for Flask app configuration
 """
 
 import pytest
+
 from app import create_app
 
 
