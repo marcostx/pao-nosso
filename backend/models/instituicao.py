@@ -3,10 +3,10 @@ Model: Instituicao
 """
 
 import enum
-import os
 import uuid
 from datetime import datetime
 
+from flask import current_app, has_app_context
 from sqlalchemy import Boolean, Column, DateTime, Enum, ForeignKey, String, Text
 from sqlalchemy.orm import relationship
 
@@ -25,8 +25,16 @@ class TipoInstituicao(enum.Enum):
 
 
 def _aprovado_default() -> bool:
-    """Em desenvolvimento auto-aprova instituições para o app já ter dados."""
-    return os.getenv("FLASK_ENV", "development") == "development"
+    """Default de aprovação de instituições.
+
+    A decisão vem da config explícita ``AUTO_APPROVE_INSTITUTIONS`` do app
+    (``DevelopmentConfig`` = ``True``, ``ProductionConfig`` = ``False``).
+    Fora de contexto Flask (ex.: scripts ad-hoc) o default é o seguro
+    ``False`` — produção sem configurar nada continua exigindo moderação.
+    """
+    if has_app_context():
+        return bool(current_app.config.get("AUTO_APPROVE_INSTITUTIONS", False))
+    return False
 
 
 class Instituicao(db.Model):

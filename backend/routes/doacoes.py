@@ -17,6 +17,7 @@ from models.doacao import (
     MetodoEntrega,
     StatusDoacao,
 )
+from models.usuario import TipoUsuario
 from services.donation_service import (
     attach_initial_solicitacao,
     get_doacao_for_owner,
@@ -58,6 +59,8 @@ def criar_doacao():
         usuario = Usuario.query.get(user_id)
         if not usuario:
             return jsonify({"error": "Usuario nao encontrado"}), 404
+        if usuario.tipo != TipoUsuario.DOADOR:
+            return jsonify({"error": "Apenas doadores podem criar doacoes"}), 403
 
         data = request.get_json() or {}
 

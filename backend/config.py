@@ -45,6 +45,8 @@ class DevelopmentConfig(Config):
     """Configuração de desenvolvimento"""
 
     DEBUG = True
+    # Em dev auto-aprovamos instituições para o app ter dados imediatamente.
+    AUTO_APPROVE_INSTITUTIONS = True
 
 
 class ProductionConfig(Config):
@@ -52,6 +54,7 @@ class ProductionConfig(Config):
 
     DEBUG = False
     SQLALCHEMY_ECHO = False
+    AUTO_APPROVE_INSTITUTIONS = False
 
 
 # Dicionário de configurações

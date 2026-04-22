@@ -84,7 +84,14 @@ def recusar_solicitacao(solicitacao: Solicitacao) -> Solicitacao:
 
 
 def cancelar_solicitacao(solicitacao: Solicitacao) -> Solicitacao:
-    """Cancelamento feito pelo doador."""
+    """Cancelamento pelo doador ou pela instituição envolvida.
+
+    Se a solicitação estava ACEITA, a doação volta para ``DISPONIVEL`` e
+    perde o vínculo com a instituição, permitindo reoferta — mesmo
+    comportamento de :func:`recusar_solicitacao`. Para encerrar a doação em
+    si o doador deve usar ``DELETE /api/doacoes/{id}`` ou
+    ``PUT /api/doacoes/{id}`` atualizando o status.
+    """
     if solicitacao.status in (StatusSolicitacao.CONCLUIDA, StatusSolicitacao.CANCELADA):
         raise ValueError("Solicitacao ja encerrada")
 
@@ -94,7 +101,8 @@ def cancelar_solicitacao(solicitacao: Solicitacao) -> Solicitacao:
 
     if estava_aceita:
         doacao = solicitacao.doacao
-        doacao.status = StatusDoacao.CANCELADA
+        doacao.status = StatusDoacao.DISPONIVEL
+        doacao.instituicao_id = None
         doacao.updated_at = datetime.utcnow()
 
     return solicitacao

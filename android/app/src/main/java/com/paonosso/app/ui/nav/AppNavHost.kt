@@ -97,9 +97,11 @@ fun AppNavHost() {
 
 private fun NavHostController.routeAfterAuth(tipo: String) {
     val target = if (tipo == UserType.INSTITUICAO) Routes.INST_HOME else Routes.APP_HOME
+    // Navigation Compose só respeita o último popUpTo — `AUTH_LOGIN` é o
+    // start destination quando o usuário não está autenticado, então limpar
+    // a partir dele (inclusive) também remove `AUTH_REGISTER` da stack.
     navigate(target) {
         popUpTo(Routes.AUTH_LOGIN) { inclusive = true }
-        popUpTo(Routes.AUTH_REGISTER) { inclusive = true }
         launchSingleTop = true
     }
 }
@@ -136,7 +138,8 @@ private fun DonorShell(nav: NavHostController, selected: String) {
                 contentPadding = padding,
                 onLoggedOut = {
                     nav.navigate(Routes.AUTH_LOGIN) {
-                        popUpTo(0) { inclusive = true }
+                        popUpTo(nav.graph.id) { inclusive = true }
+                        launchSingleTop = true
                     }
                 },
             )
@@ -171,7 +174,8 @@ private fun InstitutionShell(nav: NavHostController, selected: String) {
                 contentPadding = padding,
                 onLoggedOut = {
                     nav.navigate(Routes.AUTH_LOGIN) {
-                        popUpTo(0) { inclusive = true }
+                        popUpTo(nav.graph.id) { inclusive = true }
+                        launchSingleTop = true
                     }
                 },
             )

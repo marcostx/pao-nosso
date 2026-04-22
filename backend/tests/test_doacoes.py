@@ -49,6 +49,17 @@ def test_criar_doacao_sem_token(client):
     assert r.status_code == 401
 
 
+def test_criar_doacao_bloqueia_instituicao(client, instituicao):
+    payload = {
+        "titulo": "Nao deveria criar",
+        "categoria": "NAO_PERECIVEL",
+        "metodo_entrega": "SOLICITAR_COLETA",
+        "endereco_retirada": "Rua Y",
+    }
+    r = client.post("/api/doacoes", json=payload, headers=instituicao["headers"])
+    assert r.status_code == 403
+
+
 def test_listar_disponiveis_filtra_por_categoria(client, doador):
     client.post(
         "/api/doacoes",
