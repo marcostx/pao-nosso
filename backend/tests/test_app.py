@@ -3,6 +3,7 @@ Tests for Flask app configuration
 """
 
 import pytest
+
 from app import create_app
 
 
@@ -36,4 +37,3 @@ def test_404_error_handler():
     assert response.status_code == 404
     data = response.get_json()
     assert "error" in data
-

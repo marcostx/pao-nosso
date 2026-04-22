@@ -1,36 +1,46 @@
 package com.paonosso.app.data.api
 
+import android.content.Context
+import com.paonosso.app.BuildConfig
+import com.paonosso.app.data.local.TokenStore
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
-/**
- * Cliente Retrofit para comunicação com a API
- */
 object ApiClient {
-    
-    // Base URL - será substituída pela URL do strings.xml
-    private const val BASE_URL = "http://10.0.2.2:5000"
-    
-    private val loggingInterceptor = HttpLoggingInterceptor().apply {
-        level = HttpLoggingInterceptor.Level.BODY
-    }
-    
-    private val okHttpClient = OkHttpClient.Builder()
-        .addInterceptor(loggingInterceptor)
-        .connectTimeout(30, TimeUnit.SECONDS)
-        .readTimeout(30, TimeUnit.SECONDS)
-        .writeTimeout(30, TimeUnit.SECONDS)
-        .build()
-    
-    private val retrofit = Retrofit.Builder()
-        .baseUrl(BASE_URL)
-        .client(okHttpClient)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-    
-    val apiService: ApiService = retrofit.create(ApiService::class.java)
-}
+    @Volatile private var service: ApiService? = null
 
+    fun get(context: Context): ApiService {
+        val current = service
+        if (current != null) return current
+        synchronized(this) {
+            val again = service
+            if (again != null) return again
+            val tokenStore = TokenStore(context.applicationContext)
+            val logging = HttpLoggingInterceptor().apply {
+                level = if (BuildConfig.DEBUG) {
+                    HttpLoggingInterceptor.Level.BODY
+                } else {
+                    HttpLoggingInterceptor.Level.NONE
+                }
+            }
+            val client = OkHttpClient.Builder()
+                .addInterceptor(AuthInterceptor(tokenStore))
+                .addInterceptor(logging)
+                .connectTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS)
+                .writeTimeout(30, TimeUnit.SECONDS)
+                .build()
+            val built = Retrofit.Builder()
+                .baseUrl(BuildConfig.API_BASE_URL)
+                .client(client)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+                .create(ApiService::class.java)
+            service = built
+            return built
+        }
+    }
+}

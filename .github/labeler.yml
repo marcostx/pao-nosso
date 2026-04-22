@@ -22,7 +22,7 @@ tests:
 
 security:
   - '**/auth.py'
-  - '**/authentication/**/*
+  - '**/authentication/**/*'
   - '**/*security*'
 
 models:

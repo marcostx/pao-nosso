@@ -9,7 +9,14 @@ from flask import Flask, jsonify
 
 from config import config
 from extensions import db, init_extensions
-from routes import auth_bp, health_bp
+from routes import (
+    auth_bp,
+    doacoes_bp,
+    health_bp,
+    instituicoes_bp,
+    solicitacoes_bp,
+    stats_bp,
+)
 
 
 def create_app(config_name=None):
@@ -27,6 +34,10 @@ def create_app(config_name=None):
     # Registra blueprints
     app.register_blueprint(health_bp)
     app.register_blueprint(auth_bp)
+    app.register_blueprint(doacoes_bp)
+    app.register_blueprint(solicitacoes_bp)
+    app.register_blueprint(instituicoes_bp)
+    app.register_blueprint(stats_bp)
 
     # Handler de erro global
     @app.errorhandler(404)
@@ -47,6 +58,10 @@ def create_app(config_name=None):
                 "endpoints": {
                     "health": "/health",
                     "auth": "/api/auth",
+                    "doacoes": "/api/doacoes",
+                    "solicitacoes": "/api/solicitacoes",
+                    "instituicoes": "/api/instituicoes",
+                    "stats": "/api/stats",
                 },
             }
         )
