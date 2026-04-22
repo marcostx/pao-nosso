@@ -36,4 +36,3 @@ def test_404_error_handler():
     assert response.status_code == 404
     data = response.get_json()
     assert "error" in data
-

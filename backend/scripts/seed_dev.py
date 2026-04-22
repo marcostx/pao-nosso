@@ -78,12 +78,8 @@ def seed():
         maria = _ensure_user("Maria Silva", "maria@paonosso.dev", TipoUsuario.DOADOR)
 
         # Tres instituicoes
-        u1 = _ensure_user(
-            "Sopa Solidaria Centro", "sopa@paonosso.dev", TipoUsuario.INSTITUICAO
-        )
-        u2 = _ensure_user(
-            "Maos que Alimentam", "maos@paonosso.dev", TipoUsuario.INSTITUICAO
-        )
+        u1 = _ensure_user("Sopa Solidaria Centro", "sopa@paonosso.dev", TipoUsuario.INSTITUICAO)
+        u2 = _ensure_user("Maos que Alimentam", "maos@paonosso.dev", TipoUsuario.INSTITUICAO)
         u3 = _ensure_user(
             "Banco de Alimentos Municipal",
             "banco@paonosso.dev",
@@ -120,9 +116,7 @@ def seed():
 
         # Limpa doacoes/solicitacoes anteriores da Maria para idempotencia
         Solicitacao.query.filter(
-            Solicitacao.doacao_id.in_(
-                db.session.query(Doacao.id).filter_by(doador_id=maria.id)
-            )
+            Solicitacao.doacao_id.in_(db.session.query(Doacao.id).filter_by(doador_id=maria.id))
         ).delete(synchronize_session=False)
         Doacao.query.filter_by(doador_id=maria.id).delete()
         db.session.flush()

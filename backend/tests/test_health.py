@@ -55,4 +55,3 @@ def test_root_endpoint(client):
     assert "message" in data
     assert "version" in data
     assert "endpoints" in data
-

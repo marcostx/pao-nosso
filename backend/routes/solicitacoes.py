@@ -104,8 +104,7 @@ def criar_solicitacao():
         instituicao_id=instituicao.id,
         data_coleta_proposta=_parse_date(data.get("data_coleta_proposta"))
         or doacao.data_disponivel,
-        hora_coleta_proposta=_parse_time(data.get("hora_coleta_proposta"))
-        or doacao.horario,
+        hora_coleta_proposta=_parse_time(data.get("hora_coleta_proposta")) or doacao.horario,
         observacoes=data.get("observacoes"),
         status=StatusSolicitacao.PENDENTE,
     )
@@ -212,9 +211,7 @@ def _load_solicitacao_para_instituicao(user_id, solicitacao_id):
     instituicao = get_instituicao_for_user(user_id)
     if not instituicao:
         return None
-    return Solicitacao.query.filter_by(
-        id=solicitacao_id, instituicao_id=instituicao.id
-    ).first()
+    return Solicitacao.query.filter_by(id=solicitacao_id, instituicao_id=instituicao.id).first()
 
 
 @solicitacoes_bp.route("/<solicitacao_id>/aceitar", methods=["PUT"])

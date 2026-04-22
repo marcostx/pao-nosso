@@ -35,9 +35,7 @@ def stats_for_user(usuario) -> dict:
         doacoes = Doacao.query.filter_by(doador_id=usuario.id).all()
         concluidas = [d for d in doacoes if d.status == StatusDoacao.COLETADA]
         peso = sum(_parse_kg(d.quantidade) for d in concluidas)
-        instituicoes_ids = {
-            d.instituicao_id for d in concluidas if d.instituicao_id is not None
-        }
+        instituicoes_ids = {d.instituicao_id for d in concluidas if d.instituicao_id is not None}
         return {
             "doacoes_total": len(doacoes),
             "doacoes_concluidas": len(concluidas),

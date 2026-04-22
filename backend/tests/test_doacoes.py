@@ -81,9 +81,7 @@ def test_listar_disponiveis_filtra_por_categoria(client, doador):
         },
         headers=doador["headers"],
     )
-    r = client.get(
-        "/api/doacoes/disponiveis?categoria=HORTIFRUTI", headers=doador["headers"]
-    )
+    r = client.get("/api/doacoes/disponiveis?categoria=HORTIFRUTI", headers=doador["headers"])
     assert r.status_code == 200
     items = r.get_json()
     assert len(items) == 1

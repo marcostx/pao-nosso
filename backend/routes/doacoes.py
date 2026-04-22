@@ -166,11 +166,7 @@ def listar_disponiveis():
 def minhas_doacoes():
     """Doacoes criadas pelo doador autenticado."""
     user_id = get_jwt_identity()
-    doacoes = (
-        Doacao.query.filter_by(doador_id=user_id)
-        .order_by(Doacao.created_at.desc())
-        .all()
-    )
+    doacoes = Doacao.query.filter_by(doador_id=user_id).order_by(Doacao.created_at.desc()).all()
     return jsonify([d.to_dict() for d in doacoes]), 200
 
 

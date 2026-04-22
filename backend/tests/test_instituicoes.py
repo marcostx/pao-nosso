@@ -31,9 +31,7 @@ def test_filtro_por_bairro(client, instituicao):
     r = client.get("/api/instituicoes?bairro=Centro", headers=instituicao["headers"])
     assert r.status_code == 200
     assert len(r.get_json()) == 1
-    r = client.get(
-        "/api/instituicoes?bairro=Inexistente", headers=instituicao["headers"]
-    )
+    r = client.get("/api/instituicoes?bairro=Inexistente", headers=instituicao["headers"])
     assert r.get_json() == []
 
 

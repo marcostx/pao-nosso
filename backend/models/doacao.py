@@ -78,9 +78,7 @@ class Doacao(db.Model):
 
     # Quando metodo_entrega = EU_ENTREGO, instituicao_id aponta para o ponto de coleta escolhido.
     # Quando metodo_entrega = SOLICITAR_COLETA, fica nullo até alguma instituição aceitar.
-    instituicao_id = Column(
-        String(36), ForeignKey("instituicoes.id"), nullable=True, index=True
-    )
+    instituicao_id = Column(String(36), ForeignKey("instituicoes.id"), nullable=True, index=True)
 
     status = Column(Enum(StatusDoacao), default=StatusDoacao.DISPONIVEL, nullable=False, index=True)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False, index=True)
@@ -108,18 +106,14 @@ class Doacao(db.Model):
             "categoria": self.categoria.value,
             "janela": self.janela.value if self.janela else None,
             "horario": self.horario.isoformat() if self.horario else None,
-            "data_disponivel": (
-                self.data_disponivel.isoformat() if self.data_disponivel else None
-            ),
+            "data_disponivel": (self.data_disponivel.isoformat() if self.data_disponivel else None),
             "hora_inicio": self.hora_inicio.isoformat() if self.hora_inicio else None,
             "hora_fim": self.hora_fim.isoformat() if self.hora_fim else None,
             "metodo_entrega": self.metodo_entrega.value,
             "endereco_retirada": self.endereco_retirada,
             "bairro": self.bairro,
             "instituicao_id": str(self.instituicao_id) if self.instituicao_id else None,
-            "instituicao_nome": (
-                self.instituicao.nome_instituicao if self.instituicao else None
-            ),
+            "instituicao_nome": (self.instituicao.nome_instituicao if self.instituicao else None),
             "status": self.status.value,
             "created_at": self.created_at.isoformat(),
             "updated_at": self.updated_at.isoformat(),

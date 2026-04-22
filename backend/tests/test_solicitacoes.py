@@ -86,9 +86,7 @@ def test_aceitar_recusa_irmas(client, doador, instituicao):
     sol2 = r2.get_json()
 
     # Doador aceita a primeira
-    r = client.put(
-        f"/api/solicitacoes/{sol1['id']}/aceitar", headers=doador["headers"]
-    )
+    r = client.put(f"/api/solicitacoes/{sol1['id']}/aceitar", headers=doador["headers"])
     assert r.status_code == 200
     assert r.get_json()["status"] == "ACEITA"
 
@@ -111,9 +109,7 @@ def test_aceitar_apenas_dono_da_doacao(client, doador, instituicao):
         headers=instituicao["headers"],
     ).get_json()
     # A propria instituicao nao pode aceitar
-    r = client.put(
-        f"/api/solicitacoes/{sol['id']}/aceitar", headers=instituicao["headers"]
-    )
+    r = client.put(f"/api/solicitacoes/{sol['id']}/aceitar", headers=instituicao["headers"])
     assert r.status_code == 404
 
 
@@ -125,9 +121,7 @@ def test_concluir_marca_doacao_coletada(client, doador, instituicao):
         headers=instituicao["headers"],
     ).get_json()
     client.put(f"/api/solicitacoes/{sol['id']}/aceitar", headers=doador["headers"])
-    r = client.put(
-        f"/api/solicitacoes/{sol['id']}/concluir", headers=doador["headers"]
-    )
+    r = client.put(f"/api/solicitacoes/{sol['id']}/concluir", headers=doador["headers"])
     assert r.status_code == 200
     assert r.get_json()["status"] == "CONCLUIDA"
 
@@ -142,9 +136,7 @@ def test_agendamentos_filtro_status(client, doador, instituicao):
         json={"doacao_id": doacao["id"]},
         headers=instituicao["headers"],
     )
-    r = client.get(
-        "/api/solicitacoes/agendamentos?status=PENDENTE", headers=doador["headers"]
-    )
+    r = client.get("/api/solicitacoes/agendamentos?status=PENDENTE", headers=doador["headers"])
     assert r.status_code == 200
     items = r.get_json()
     assert len(items) == 1

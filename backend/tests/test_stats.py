@@ -25,9 +25,7 @@ def test_stats_doador_com_doacao_concluida(client, doador, instituicao):
         headers=doador["headers"],
     ).get_json()
 
-    sols = client.get(
-        "/api/solicitacoes/recebidas", headers=instituicao["headers"]
-    ).get_json()
+    sols = client.get("/api/solicitacoes/recebidas", headers=instituicao["headers"]).get_json()
     sol_id = sols[0]["id"]
 
     client.put(f"/api/solicitacoes/{sol_id}/aceitar", headers=doador["headers"])
