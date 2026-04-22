@@ -21,7 +21,7 @@ pao-nosso/
 │   ├── models/
 │   │   ├── usuario.py
 │   │   ├── instituicao.py     # bairro, sem lat/lng, aprovado em dev
-│   │   ├── doacao.py          # janela, horario, metodo_entrega, instituicao_id, bairro
+│   │   ├── doacao.py          # janela, horario, metodo_entrega, bairro
 │   │   ├── solicitacao.py     # status PENDENTE/ACEITA/RECUSADA/CANCELADA/CONCLUIDA
 │   │   └── dispositivo_fcm.py
 │   │
@@ -56,7 +56,7 @@ pao-nosso/
     ├── README.md
     │
     └── app/
-        ├── build.gradle.kts   # Compose BOM, Material3, Navigation Compose, Coil, DataStore
+        ├── build.gradle.kts   # Compose BOM, Material3, Coil, DataStore
         └── src/main/
             ├── AndroidManifest.xml   # Sem permissões de localização
             │
@@ -73,7 +73,7 @@ pao-nosso/
             │   │   ├── local/
             │   │   │   └── TokenStore.kt        # DataStore preferences
             │   │   ├── model/
-            │   │   │   └── Models.kt            # Donation, Appointment, Institution, Stats…
+            │   │   │   └── Models.kt            # Donation, Appointment, Stats…
             │   │   └── repository/
             │   │       ├── AuthRepository.kt
             │   │       ├── DonationRepository.kt
@@ -83,7 +83,7 @@ pao-nosso/
             │   │
             │   ├── ui/
             │   │   ├── theme/        # Color, Type, Shape, Theme (paleta esmeralda)
-            │   │   ├── components/   # AppScaffold (BottomBar + FAB), StatusPill, EmptyState
+            │   │   ├── components/   # AppScaffold, StatusPill, EmptyState
             │   │   ├── nav/          # Routes.kt, AppNavHost.kt
             │   │   └── screens/
             │   │       ├── auth/         # LoginScreen, RegisterScreen
@@ -105,22 +105,22 @@ pao-nosso/
 
 ## Onde começar
 
-**Backend**
+### Backend
 
 1. `backend/app.py` — registra todos os blueprints.
-2. `backend/models/doacao.py` e `solicitacao.py` — modelo central da v2.
-3. `backend/services/donation_service.py` — regras de negócio (auto-recusa,
+1. `backend/models/doacao.py` e `solicitacao.py` — modelo central da v2.
+1. `backend/services/donation_service.py` — regras de negócio (auto-recusa,
    transições de status).
-4. `backend/tests/` — exemplos completos de uso da API.
+1. `backend/tests/` — exemplos completos de uso da API.
 
-**Android**
+### Android
 
 1. `MainActivity.kt` → `ui/nav/AppNavHost.kt` — ponto de entrada Compose.
-2. `ui/components/AppScaffold.kt` — bottom bar + FAB central que sustenta o
+1. `ui/components/AppScaffold.kt` — bottom bar + FAB central que sustenta o
    shell do doador.
-3. `ui/screens/donate/DonateFlowScreen.kt` — wizard de Nova Doação (mocks
+1. `ui/screens/donate/DonateFlowScreen.kt` — wizard de Nova Doação (mocks
    fielmente reproduzidos).
-4. `data/AppContainer.kt` — DI leve (service locator) usado pelos
+1. `data/AppContainer.kt` — DI leve (service locator) usado pelos
    `ViewModels`.
 
 ## Convenções

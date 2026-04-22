@@ -25,7 +25,11 @@ curl http://localhost:5000/health
 Resposta esperada:
 
 ```json
-{ "status": "ok", "message": "Pão Nosso API está funcionando!", "version": "1.0.0" }
+{
+  "status": "ok",
+  "message": "Pão Nosso API está funcionando!",
+  "version": "1.0.0"
+}
 ```
 
 Rodando os testes:
@@ -40,9 +44,9 @@ pytest
 ## 2. Android (Jetpack Compose)
 
 1. Abra a pasta `android/` no Android Studio Hedgehog (ou superior).
-2. Aguarde o Gradle sincronizar (na primeira vez baixa Compose BOM,
+1. Aguarde o Gradle sincronizar (na primeira vez baixa Compose BOM,
    Retrofit, DataStore, Coil, etc).
-3. Selecione um emulador AVD com API 24+ (recomendado API 34) e clique
+1. Selecione um emulador AVD com API 24+ (recomendado API 34) e clique
    **Run**. O app aponta para `http://10.0.2.2:5000` no build de debug.
 
 Para rodar em dispositivo físico, edite o `buildConfigField` `API_BASE_URL`

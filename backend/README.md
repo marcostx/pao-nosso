@@ -17,18 +17,52 @@ python app.py                       # http://0.0.0.0:5000
 
 ## Endpoints
 
-Todas as rotas (exceto `/health`, `/ping`, `POST /api/auth/register|login`)
-exigem `Authorization: Bearer <token>`. Detalhes completos em
-[`SPEC.md`](../SPEC.md) §4.
+Todas as rotas (exceto `/health`, `/ping`, `POST /api/auth/register` e
+`POST /api/auth/login`) exigem `Authorization: Bearer <token>`.
+Detalhes completos em [`SPEC.md`](../SPEC.md) §4.
 
-| Grupo               | Métodos / paths principais                                                                 |
-|---------------------|---------------------------------------------------------------------------------------------|
-| Autenticação        | `POST /api/auth/register`, `POST /api/auth/login`, `GET /api/auth/me`                        |
-| Doações             | `POST /api/doacoes`, `GET /api/doacoes/disponiveis`, `GET /api/doacoes/minhas`, `GET/PUT/DELETE /api/doacoes/{id}` |
-| Solicitações        | `POST /api/solicitacoes`, `GET /api/solicitacoes/recebidas`, `GET /api/solicitacoes/enviadas`, `GET /api/solicitacoes/agendamentos`, `PUT /aceitar|recusar|cancelar|concluir` |
-| Instituições        | `POST /api/instituicoes`, `GET /api/instituicoes`, `GET /api/instituicoes/me`, `GET/PUT /api/instituicoes/{id}` |
-| Estatísticas        | `GET /api/stats/me`                                                                         |
-| Saúde               | `GET /health`, `GET /ping`                                                                  |
+**Autenticação**
+
+- `POST /api/auth/register`
+- `POST /api/auth/login`
+- `GET /api/auth/me`
+
+**Doações**
+
+- `POST /api/doacoes`
+- `GET /api/doacoes/disponiveis`
+- `GET /api/doacoes/minhas`
+- `GET /api/doacoes/{id}`
+- `PUT /api/doacoes/{id}`
+- `DELETE /api/doacoes/{id}`
+
+**Solicitações**
+
+- `POST /api/solicitacoes`
+- `GET /api/solicitacoes/recebidas`
+- `GET /api/solicitacoes/enviadas`
+- `GET /api/solicitacoes/agendamentos`
+- `PUT /api/solicitacoes/{id}/aceitar`
+- `PUT /api/solicitacoes/{id}/recusar`
+- `PUT /api/solicitacoes/{id}/cancelar`
+- `PUT /api/solicitacoes/{id}/concluir`
+
+**Instituições**
+
+- `POST /api/instituicoes`
+- `GET /api/instituicoes`
+- `GET /api/instituicoes/me`
+- `GET /api/instituicoes/{id}`
+- `PUT /api/instituicoes/{id}`
+
+**Estatísticas**
+
+- `GET /api/stats/me`
+
+**Saúde**
+
+- `GET /health`
+- `GET /ping`
 
 ### Smoke test
 

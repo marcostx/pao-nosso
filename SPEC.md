@@ -2,7 +2,9 @@
 
 ## 1. Visão Geral
 
-App mobile Android para conectar doadores de alimentos com instituições de caridade (cozinhas solidárias, abrigos) que distribuem comida para pessoas em situação de vulnerabilidade.
+App mobile Android para conectar doadores de alimentos com instituições
+de caridade (cozinhas solidárias, abrigos) que distribuem comida para
+pessoas em situação de vulnerabilidade.
 
 ## 2. Arquitetura do Sistema
 
@@ -30,6 +32,7 @@ App mobile Android para conectar doadores de alimentos com instituições de car
 ### 2.2 Stack Tecnológico
 
 **Backend:**
+
 - Python 3.10+ com Flask
 - SQLAlchemy (ORM)
 - SQLite (desenvolvimento local) / PostgreSQL (produção)
@@ -37,6 +40,7 @@ App mobile Android para conectar doadores de alimentos com instituições de car
 - Flask-CORS para comunicação com app
 
 **Mobile:**
+
 - Android nativo (Kotlin) com **Jetpack Compose** + Material 3
 - MinSDK: 24 (Android 7.0)
 - TargetSDK: 34 (Android 14)
@@ -47,18 +51,21 @@ App mobile Android para conectar doadores de alimentos com instituições de car
 - Sem Google Maps SDK (a UI é list-first)
 
 **Infraestrutura Local (Testes):**
+
 - Backend rodando em localhost:5000
 - Emulador Android (10.0.2.2:5000) ou dispositivo físico
 - SQLite para banco de dados
 
-**Fora do MVP (Fase 2):** Firebase Cloud Messaging, mapa real, fotos das doações.
+**Fora do MVP (Fase 2):** Firebase Cloud Messaging, mapa real, fotos
+das doações.
 
 ## 3. Modelo de Dados
 
 ### 3.1 Entidades
 
 #### Usuario
-```
+
+```text
 - id: UUID (PK)
 - nome: String (max 100)
 - email: String (unique)
@@ -69,23 +76,26 @@ App mobile Android para conectar doadores de alimentos com instituições de car
 ```
 
 #### Instituicao
-```
+
+```text
 - id: UUID (PK)
 - usuario_id: UUID (FK -> Usuario)
 - nome_instituicao: String (max 200)
 - cnpj: String (unique, nullable)
-- tipo: Enum ('COZINHA_SOLIDARIA', 'ABRIGO', 'ONG', 'IGREJA', 'GOVERNO', 'OUTRO')
+- tipo: Enum ('COZINHA_SOLIDARIA', 'ABRIGO', 'ONG', 'IGREJA',
+              'GOVERNO', 'OUTRO')
 - descricao: Text
 - endereco_completo: String
 - bairro: String (max 100, nullable, indexed)
 - horario_funcionamento: String
 - telefone_contato: String
-- aprovado: Boolean (default True em desenvolvimento, False em produção)
+- aprovado: Boolean (default True em dev, False em produção)
 - created_at: Timestamp
 ```
 
 #### Doacao
-```
+
+```text
 - id: UUID (PK)
 - doador_id: UUID (FK -> Usuario)
 - titulo: String (max 100)
@@ -106,25 +116,32 @@ App mobile Android para conectar doadores de alimentos com instituições de car
 ```
 
 Notas:
-- `EU_ENTREGO` exige `instituicao_id` (cria automaticamente uma `Solicitacao` PENDENTE).
-- `SOLICITAR_COLETA` deixa `instituicao_id` nulo até alguma instituição se candidatar.
-- `latitude`/`longitude` foram removidos. A localização é trabalhada como string (`bairro`).
+
+- `EU_ENTREGO` exige `instituicao_id` (cria automaticamente uma
+  `Solicitacao` PENDENTE).
+- `SOLICITAR_COLETA` deixa `instituicao_id` nulo até alguma instituição
+  se candidatar.
+- `latitude`/`longitude` foram removidos. A localização é representada
+  como string (`bairro`).
 
 #### Solicitacao
-```
+
+```text
 - id: UUID (PK)
 - doacao_id: UUID (FK -> Doacao)
 - instituicao_id: UUID (FK -> Instituicao)
 - data_coleta_proposta: Date (nullable)
 - hora_coleta_proposta: Time (nullable)
 - observacoes: Text (nullable)
-- status: Enum ('PENDENTE', 'ACEITA', 'RECUSADA', 'CANCELADA', 'CONCLUIDA')
+- status: Enum ('PENDENTE', 'ACEITA', 'RECUSADA',
+                'CANCELADA', 'CONCLUIDA')
 - created_at: Timestamp
 - updated_at: Timestamp
 ```
 
 #### DispositivoFCM
-```
+
+```text
 - id: UUID (PK)
 - usuario_id: UUID (FK -> Usuario)
 - token_fcm: String
@@ -253,38 +270,38 @@ estão implementados nesta versão.
 ### 5.1 Fluxo de Cadastro - Instituição
 
 1. Usuário baixa app e seleciona "Sou uma Instituição"
-2. Preenche formulário: nome, email, senha, dados da instituição
-3. App envia localização baseada no endereço (geocoding)
-4. Backend cria usuário tipo INSTITUICAO (status: aguardando aprovação)
-5. Instituição recebe email/notificação quando aprovada (manual por admin)
+1. Preenche formulário: nome, email, senha, dados da instituição
+1. App envia localização baseada no endereço (geocoding)
+1. Backend cria usuário tipo INSTITUICAO (status: aguardando aprovação)
+1. Instituição recebe email/notificação quando aprovada (manual por admin)
 
 ### 5.2 Fluxo de Cadastro - Doador
 
 1. Usuário baixa app e seleciona "Quero Doar"
-2. Preenche formulário: nome, email, senha, telefone
-3. Backend cria usuário tipo DOADOR
-4. Login automático após cadastro
+1. Preenche formulário: nome, email, senha, telefone
+1. Backend cria usuário tipo DOADOR
+1. Login automático após cadastro
 
 ### 5.3 Fluxo de Doação
 
 1. Doador clica em "Nova Doação"
-2. Preenche: o que vai doar, quantidade, categoria, data/horário disponível
-3. Informa endereço de retirada (pode usar localização atual)
-4. Backend cria doação com status DISPONIVEL
-5. Backend envia notificação push para instituições num raio de 10km
-6. Instituições visualizam doação disponível
+1. Preenche: o que vai doar, quantidade, categoria, data/horário disponível
+1. Informa endereço de retirada (pode usar localização atual)
+1. Backend cria doação com status DISPONIVEL
+1. Backend envia notificação push para instituições num raio de 10km
+1. Instituições visualizam doação disponível
 
 ### 5.4 Fluxo de Solicitação
 
 1. Instituição vê lista de doações disponíveis próximas
-2. Seleciona uma doação de interesse
-3. Propõe data/hora de coleta
-4. Backend cria solicitação com status PENDENTE
-5. Doador recebe notificação
-6. Doador aceita ou recusa a solicitação
-7. Se aceita: status da doação muda para RESERVADA
-8. Outras solicitações para mesma doação são automaticamente recusadas
-9. Após coleta, instituição ou doador marca como CONCLUIDA
+1. Seleciona uma doação de interesse
+1. Propõe data/hora de coleta
+1. Backend cria solicitação com status PENDENTE
+1. Doador recebe notificação
+1. Doador aceita ou recusa a solicitação
+1. Se aceita: status da doação muda para RESERVADA
+1. Outras solicitações para mesma doação são automaticamente recusadas
+1. Após coleta, instituição ou doador marca como CONCLUIDA
 
 ## 6. Interface Android - Telas Principais
 
@@ -301,36 +318,38 @@ doador e o da instituição com base no `tipo` persistido no `TokenStore`.
 ### 6.2 Telas do Doador (shell com bottom bar + FAB central)
 
 - **Home** (`ui/screens/home/HomeScreen.kt`)
-  - Header em gradiente esmeralda com nome + total de refeições salvas
-  - 2 atalhos rápidos: "Nova Doação" e "Ver Coletas"
-  - Lista "Próximas Coletas" (`/api/solicitacoes/agendamentos?status=ACEITA`)
+    - Header em gradiente esmeralda com nome + total de refeições salvas
+    - 2 atalhos rápidos: "Nova Doação" e "Ver Coletas"
+    - Lista "Próximas Coletas"
+      (`/api/solicitacoes/agendamentos?status=ACEITA`)
 - **Agenda** (`ui/screens/agenda/AgendaScreen.kt`)
-  - Lista única vinda de `/api/solicitacoes/agendamentos`
-  - `StatusPill` colore por status (ACEITA→esmeralda, PENDENTE→laranja,
-    RECUSADA/CANCELADA→vermelho)
-  - Ações: Aceitar/Recusar (PENDENTE) ou Concluir/Cancelar (ACEITA)
+    - Lista única vinda de `/api/solicitacoes/agendamentos`
+    - `StatusPill` colore por status (ACEITA→esmeralda, PENDENTE→laranja,
+      RECUSADA/CANCELADA→vermelho)
+    - Ações: Aceitar/Recusar (PENDENTE) ou Concluir/Cancelar (ACEITA)
 - **Mapa** (`ui/screens/map/MapPlaceholderScreen.kt`)
-  - Placeholder "Mapa em desenvolvimento" — sem dependências
+    - Placeholder "Mapa em desenvolvimento" — sem dependências
 - **Perfil** (`ui/screens/profile/ProfileScreen.kt`)
-  - Avatar com inicial, dois cards de estatística (Doações + Peso Total),
-    Logout
+    - Avatar com inicial, dois cards de estatística (Doações +
+      Peso Total), Logout
 - **Nova Doação** (`ui/screens/donate/DonateFlowScreen.kt`)
-  - Wizard 3 passos:
-    1. Item, quantidade, observação, categoria (chips)
-    2. Método de entrega (Eu Entrego ↔ lista de instituições | Solicitar
-       Coleta ↔ campo de endereço), janela (Hoje/Amanhã) e slot de horário
-    3. Resumo + Confirmar
-  - Animações `fadeIn() + slideInVertically()` entre steps
+    - Wizard 3 passos:
+        1. Item, quantidade, observação, categoria (chips)
+        1. Método de entrega (Eu Entrego ↔ lista de instituições |
+           Solicitar Coleta ↔ campo de endereço), janela (Hoje/Amanhã)
+           e slot de horário
+        1. Resumo + Confirmar
+    - Animações `fadeIn() + slideInVertically()` entre steps
 
 ### 6.3 Telas da Instituição (shell com bottom bar)
 
 - **Doações** (`ui/screens/institution/InstitutionHomeScreen.kt`)
-  - Lista `/api/doacoes/disponiveis`
-  - Botão "Solicitar coleta" → cria `Solicitacao` PENDENTE; após criada o card
-    mostra "Pedido enviado"
+    - Lista `/api/doacoes/disponiveis`
+    - Botão "Solicitar coleta" → cria `Solicitacao` PENDENTE; após
+      criada o card mostra "Pedido enviado"
 - **Pedidos** (`ui/screens/institution/InstitutionRequestsScreen.kt`)
-  - Lista `/api/solicitacoes/recebidas`, com `StatusPill` e ação "Marcar como
-    retirado" / "Cancelar" para ACEITA
+    - Lista `/api/solicitacoes/recebidas`, com `StatusPill` e ação
+      "Marcar como retirado" / "Cancelar" para ACEITA
 - **Perfil** — reaproveita `ProfileScreen`
 
 ## 7. Configuração Local para Testes
@@ -419,7 +438,8 @@ curl -X POST http://localhost:5000/api/doacoes \
   }'
 
 # Listar doações disponíveis próximas
-curl -X GET "http://localhost:5000/api/doacoes/disponiveis?lat=-23.550520&lng=-46.633308&raio=10" \
+curl -X GET \
+  "http://localhost:5000/api/doacoes/disponiveis?bairro=Centro" \
   -H "Authorization: Bearer <token>"
 ```
 
@@ -472,33 +492,32 @@ pao-nosso/
 │   ├── app.py
 │   ├── requirements.txt
 │   ├── init_db.py
-│   ├── models/         (usuario, instituicao, doacao, solicitacao, dispositivo_fcm)
-│   ├── routes/         (auth, doacoes, solicitacoes, instituicoes, stats, health)
+│   ├── models/         (usuario, instituicao, doacao, solicitacao, fcm)
+│   ├── routes/         (auth, doacoes, solicitacoes, instituicoes, stats)
 │   ├── services/       (donation_service, stats_service)
 │   ├── scripts/        (seed_dev.py)
 │   ├── utils/          (validators)
-│   └── tests/          (test_doacoes, test_solicitacoes, test_instituicoes, test_stats, ...)
+│   └── tests/          (test_doacoes, test_solicitacoes, test_stats…)
 └── android/
     └── app/src/main/java/com/paonosso/app/
-        ├── MainActivity.kt          (single activity, hosts AppNavHost)
+        ├── MainActivity.kt          (single activity → AppNavHost)
         ├── PaoNossoApplication.kt
         ├── data/
-        │   ├── api/                 (ApiService, ApiClient, AuthInterceptor)
+        │   ├── api/                 (ApiService, ApiClient, Auth)
         │   ├── local/               (TokenStore - DataStore)
-        │   ├── model/               (Donation, Appointment, Institution, Stats, Auth*)
-        │   └── repository/          (Auth, Donation, Appointment, Institution, Stats)
+        │   ├── model/               (Donation, Appointment, Stats…)
+        │   └── repository/          (Auth, Donation, Appointment…)
         ├── ui/
-        │   ├── theme/               (Color, Theme, Type, Shape — paleta esmeralda)
-        │   ├── components/          (AppScaffold, BottomBar com FAB, StatusPill, EmptyState)
+        │   ├── theme/               (Color, Theme, Type, Shape)
+        │   ├── components/          (AppScaffold, StatusPill…)
         │   ├── nav/                 (AppNavHost, Routes)
-        │   └── screens/             (auth, home, agenda, donate, map, profile, institution)
-        └── viewmodel/               (Auth, Home, Agenda, Donate, Profile, InstitutionHome,
-                                       InstitutionRequests)
+        │   └── screens/             (auth, home, agenda, donate…)
+        └── viewmodel/               (Auth, Home, Agenda, Donate…)
 ```
 
 ## 13. Métricas de Sucesso
 
-- **Funcional**: App consegue completar fluxo completo de doação → solicitação → coleta
+- **Funcional**: app completa o fluxo doação → solicitação → coleta
 - **Performance**: APIs respondem em < 500ms
 - **Usabilidade**: Cadastro e criação de doação em < 3 minutos
 - **Confiabilidade**: 99% de uptime em produção
@@ -515,11 +534,9 @@ pao-nosso/
 ## 15. Próximos Passos
 
 1. ✅ Revisar e aprovar esta especificação
-2. ⏳ Implementar backend API
-3. ⏳ Implementar app Android
-4. ⏳ Testes locais integrados
-5. ⏳ Deploy em ambiente de staging
-6. ⏳ Testes com usuários beta
-7. ⏳ Publicação na Google Play Store
-
----
+1. ⏳ Implementar backend API
+1. ⏳ Implementar app Android
+1. ⏳ Testes locais integrados
+1. ⏳ Deploy em ambiente de staging
+1. ⏳ Testes com usuários beta
+1. ⏳ Publicação na Google Play Store

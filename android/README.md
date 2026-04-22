@@ -13,10 +13,10 @@ API Flask em `../backend`.
 ## Como rodar
 
 1. Abra `android/` no Android Studio.
-2. Aguarde o Gradle sincronizar (Compose BOM, Material3, Retrofit, OkHttp,
+1. Aguarde o Gradle sincronizar (Compose BOM, Material3, Retrofit, OkHttp,
    DataStore, Coil, Navigation Compose).
-3. Garanta que o backend esteja rodando (`cd ../backend && python app.py`).
-4. Selecione um AVD e clique **Run**.
+1. Garanta que o backend esteja rodando (`cd ../backend && python app.py`).
+1. Selecione um AVD e clique **Run**.
 
 O build de debug aponta para `http://10.0.2.2:5000` (endereço do host
 visto pelo emulador). Para usar outro endereço (dispositivo físico,
@@ -56,7 +56,7 @@ app/src/main/java/com/paonosso/app/
 │
 ├── ui/
 │   ├── theme/                      # Color, Type, Shape, Theme
-│   ├── components/                 # AppScaffold (BottomBar + FAB), StatusPill, EmptyState
+│   ├── components/                 # AppScaffold, StatusPill, EmptyState
 │   ├── nav/                        # Routes.kt, AppNavHost.kt
 │   └── screens/
 │       ├── auth/                   # LoginScreen, RegisterScreen
@@ -84,11 +84,11 @@ ViewModel expõe um `Factory` que pega as repos do `AppContainer`.
 - **Auth:** Login + Registro com seleção de tipo (DOADOR / INSTITUICAO).
 - **Doador shell** (`AppScaffold`): bottom bar com FAB central que vai
   para o wizard "Nova Doação".
-  - Home: header com nome + refeições salvas, atalhos, "Próximas Coletas".
-  - Agenda: lista única com `StatusPill` e ações por status.
-  - Mapa: placeholder estático.
-  - Perfil: avatar, estatísticas, logout.
-  - Donate: wizard 3 passos com animações entre steps.
+    - Home: header com nome + refeições salvas, atalhos, "Próximas Coletas".
+    - Agenda: lista única com `StatusPill` e ações por status.
+    - Mapa: placeholder estático.
+    - Perfil: avatar, estatísticas, logout.
+    - Donate: wizard 3 passos com animações entre steps.
 - **Institution shell:** lista de doações disponíveis e caixa de pedidos
   recebidos com Aceitar/Recusar/Concluir/Cancelar.
 

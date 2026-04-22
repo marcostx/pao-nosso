@@ -36,9 +36,9 @@ pytest
 ## 2. Android
 
 1. Abra `android/` no Android Studio.
-2. Aguarde o Gradle sincronizar (Compose BOM, Material3, Retrofit, OkHttp,
+1. Aguarde o Gradle sincronizar (Compose BOM, Material3, Retrofit, OkHttp,
    DataStore, Coil, Navigation Compose).
-3. Selecione um AVD (API 24+, recomendado API 34) e clique **Run**. O
+1. Selecione um AVD (API 24+, recomendado API 34) e clique **Run**. O
    debug build aponta para `http://10.0.2.2:5000`.
 
 ### Apontando para outro endereço

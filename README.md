@@ -28,9 +28,9 @@ A Mapa fica como placeholder no MVP — o fluxo inteiro é list-first.
 **Backend** (`backend/`): Python 3.10+, Flask, SQLAlchemy, SQLite (dev) ou
 Postgres (prod), JWT, Flask-CORS, pytest.
 
-**Mobile** (`android/`): Kotlin + **Jetpack Compose** (Material 3), Retrofit
-+ OkHttp + `AuthInterceptor`, DataStore, Navigation Compose, Coil. minSdk 24,
-targetSdk 34. Sem Google Maps SDK.
+**Mobile** (`android/`): Kotlin + **Jetpack Compose** (Material 3),
+Retrofit, OkHttp com `AuthInterceptor`, DataStore, Navigation Compose,
+Coil. minSdk 24, targetSdk 34. Sem Google Maps SDK.
 
 **Fora do MVP (Fase 2):** FCM/push, mapa real, upload de fotos, painel
 administrativo.
