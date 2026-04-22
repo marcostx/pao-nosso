@@ -1,283 +1,108 @@
-# Quick Start - Pão Nosso
+# Quick Start — Pão Nosso
 
-Guia visual rápido para executar o projeto em 5 minutos.
+Guia para subir o app + backend em poucos minutos.
 
 ---
 
-## Execução em 3 Passos
-
-### Passo 1: Backend (2 minutos)
+## 1. Backend (Flask)
 
 ```bash
 cd backend
 python3 -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
+source venv/bin/activate          # Windows: venv\Scripts\activate
 pip install -r requirements.txt
-python init_db.py
-python app.py
+python init_db.py                 # cria/recria o SQLite
+python scripts/seed_dev.py        # opcional: popula com Maria Silva + 3 instituições
+python app.py                     # servidor em http://0.0.0.0:5000
 ```
 
-**Deve aparecer:**
-```
-Banco de dados inicializado!
-Servidor rodando em http://0.0.0.0:5000
-```
+Verifique:
 
-**Teste rápido:**
 ```bash
-# Em outro terminal
 curl http://localhost:5000/health
 ```
 
-**Deve retornar:**
+Resposta esperada:
+
 ```json
-{
-  "status": "ok",
-  "message": "Pão Nosso API está funcionando!",
-  "version": "1.0.0"
-}
+{ "status": "ok", "message": "Pão Nosso API está funcionando!", "version": "1.0.0" }
 ```
 
----
-
-### Passo 2: Verificar que funciona (30 segundos)
+Rodando os testes:
 
 ```bash
 cd backend
-./test_api.sh
-```
-
-**Deve aparecer:**
-```
-======================================
-Testando API Pão Nosso
-======================================
-
-Testando Health Check... ✓
-Testando Endpoint Raiz... ✓
-Registrando Doador... ✓
-Fazendo Login do Doador... ✓
-Registrando Instituição... ✓
-Buscando informações do usuário autenticado... ✓
-
-======================================
-Testes concluídos!
-======================================
+pytest
 ```
 
 ---
 
-### Passo 3: Android App (2 minutos)
+## 2. Android (Jetpack Compose)
 
-#### Opção A: Emulador Android
+1. Abra a pasta `android/` no Android Studio Hedgehog (ou superior).
+2. Aguarde o Gradle sincronizar (na primeira vez baixa Compose BOM,
+   Retrofit, DataStore, Coil, etc).
+3. Selecione um emulador AVD com API 24+ (recomendado API 34) e clique
+   **Run**. O app aponta para `http://10.0.2.2:5000` no build de debug.
 
-1. **Abrir Android Studio**
-   ```
-   File > Open > Selecionar pasta 'android/'
-   ```
+Para rodar em dispositivo físico, edite o `buildConfigField` `API_BASE_URL`
+no bloco `debug` de `android/app/build.gradle.kts`:
 
-2. **Aguardar sincronização do Gradle**
-   - Primeira vez pode demorar 1-2 minutos
-   - Status aparece na barra inferior
+```kotlin
+buildConfigField("String", "API_BASE_URL", "\"http://192.168.0.10:5000/\"")
+```
 
-3. **Criar/Iniciar Emulador**
-   ```
-   Tools > AVD Manager > Create Virtual Device
-   Device: Pixel 5
-   System Image: Android 12 (API 31) ou superior
-   ```
-
-4. **Executar**
-   ```
-   Clicar no botão Run (ou Shift+F10)
-   ```
-
-#### Opção B: Dispositivo Físico
-
-1. **No dispositivo Android:**
-   - Configurações > Sobre o telefone
-   - Tocar 7x em "Número da versão"
-   - Configurações > Opções do desenvolvedor
-   - Ativar "Depuração USB"
-
-2. **Conectar via USB**
-
-3. **Descobrir IP da sua máquina:**
-   ```bash
-   # macOS/Linux
-   ifconfig | grep inet
-   
-   # Exemplo de resultado: 192.168.1.100
-   ```
-
-4. **Atualizar URL no Android:**
-   - Editar: `android/app/src/main/res/values/strings.xml`
-   - Mudar de: `http://10.0.2.2:5000`
-   - Para: `http://192.168.1.100:5000` (seu IP)
-
-5. **Executar no Android Studio**
-   ```
-   Clicar no botão Run
-   ```
+(use o IP da máquina onde o Flask está rodando, na mesma Wi-Fi).
 
 ---
 
-## Verificando se está tudo OK
+## 3. Caminho feliz no app
 
-### No Terminal (Backend):
+Use as credenciais do seed:
 
-```
-Banco de dados inicializado!
-Servidor rodando em http://0.0.0.0:5000
- * Serving Flask app 'app'
- * Debug mode: on
-```
+| tipo        | email                    | senha    |
+|-------------|--------------------------|----------|
+| Doador      | maria@example.com        | senha123 |
+| Instituição | sopa@solidaria.org       | senha123 |
 
-### No App Android:
+Como doador você verá a Home com "Próximas Coletas", pode tocar no FAB para
+abrir o wizard de Nova Doação (3 steps), ver suas doações na Agenda e suas
+estatísticas no Perfil.
 
-Você deve ver esta tela:
-
-```
-┌─────────────────────────────┐
-│                             │
-│                             │
-│        Pão Nosso           │
-│  Conectando doadores e     │
-│      instituições          │
-│                             │
-│  Conectado ao servidor     │
-│                             │
-│  Backend: Pão Nosso API    │
-│  está funcionando!         │
-│  Versão: 1.0.0             │
-│                             │
-│  ┌───────────────────┐     │
-│  │   Sou Doador      │     │
-│  └───────────────────┘     │
-│                             │
-│  ┌───────────────────┐     │
-│  │ Sou Instituição   │     │
-│  └───────────────────┘     │
-│                             │
-└─────────────────────────────┘
-```
+Como instituição, você verá a lista de doações disponíveis e pode enviar
+pedidos de coleta — eles aparecem na Agenda do doador.
 
 ---
 
-## Problemas?
+## 4. Problemas comuns
 
-### Backend não inicia
+**Backend não inicia / `ModuleNotFoundError`:**
 
-**Erro:** `ModuleNotFoundError`
-
-**Solução:**
 ```bash
-source venv/bin/activate  # Ativar ambiente virtual
+source venv/bin/activate
 pip install -r requirements.txt
 ```
 
----
+**App mostra erro de rede:**
 
-### App mostra "Erro de conexão"
+- O backend está rodando? `curl http://localhost:5000/health`
+- A `API_BASE_URL` aponta pro endereço correto? (`10.0.2.2:5000` no
+  emulador, IP da máquina no dispositivo físico)
+- Mesma rede Wi-Fi se for físico?
 
-**Checklist:**
-- [ ] Backend está rodando? (`curl http://localhost:5000/health`)
-- [ ] URL correta no `strings.xml`?
-  - Emulador: `http://10.0.2.2:5000`
-  - Físico: `http://SEU_IP:5000`
-- [ ] Dispositivo na mesma rede Wi-Fi?
+**Reset do banco:**
 
-**Teste rápido:**
 ```bash
-# No terminal do seu computador
-curl http://localhost:5000/health
-
-# Se funcionar, backend está OK
-# Se não, verifique se app.py está rodando
+cd backend
+rm instance/paonosso.db
+python init_db.py
+python scripts/seed_dev.py
 ```
 
 ---
 
-### Gradle sync failed
+## 5. Próximos passos
 
-**Solução:**
-```bash
-cd android
-gradle wrapper  # Gera o gradlew
-./gradlew clean --refresh-dependencies
-```
-
----
-
-## Resumo Visual
-
-``` 
-┌─────────────────────────────────────────────────────────┐
-│                                                         │
-│  TERMINAL 1                    ANDROID STUDIO          │
-│  ┌──────────────┐             ┌──────────────┐        │
-│  │              │             │              │        │
-│  │  cd backend  │             │  File > Open │        │
-│  │  python      │             │   android/   │        │
-│  │  app.py      │             │              │        │
-│  │              │             │  Sync Gradle │        │
-│  │  Running     │  ◄────────► │              │        │
-│  │              │   REST API  │  Run         │        │
-│  │ localhost:   │             │              │        │
-│  │    5000      │             │  Conectado   │        │
-│  │              │             │              │        │
-│  └──────────────┘             └──────────────┘        │
-│        ▲                                               │
-│        │                                               │
-│        ▼                                               │
-│  ┌──────────────┐                                     │
-│  │  SQLite DB   │                                     │
-│  │ paonosso.db  │                                     │
-│  └──────────────┘                                     │
-│                                                         │
-└─────────────────────────────────────────────────────────┘
-```
-
----
-
-## Proximo Passo
-
-Agora que está tudo funcionando, você pode:
-
-1. **Explorar o código:**
-   - Backend: `backend/app.py`, `backend/routes/auth.py`
-   - Android: `android/app/src/main/java/com/paonosso/app/MainActivity.kt`
-
-2. **Ler a documentação:**
-   - [`SPEC.md`](https://github.com/marcostx/pao-nosso/blob/main/SPEC.md) - Especificação completa
-   - [`README_SETUP.md`](README_SETUP.md) - Guia detalhado
-
-3. **Começar a desenvolver:**
-   - Fase 2: Telas de login/registro no Android
-   - Fase 3: Endpoints de doações
-   - Fase 4: Integração com Google Maps
-
----
-
-## Precisa de Ajuda?
-
-1. Verifique os logs:
-   - Backend: Terminal onde executou `python app.py`
-   - Android: Logcat no Android Studio
-
-2. Consulte a documentação:
-   - `backend/README.md` - Detalhes do backend
-   - `android/README.md` - Detalhes do Android
-
-3. Teste os endpoints manualmente:
-   ```bash
-   cd backend
-   ./test_api.sh
-   ```
-
----
-
-**Tempo total:** ~5 minutos
-**Status esperado:** Backend rodando + App conectado
-
-**Boa codificação!**
+- Ler [`SPEC.md`](SPEC.md) para ver a API completa e o modelo de dados.
+- Ler [`PROJECT_STRUCTURE.md`](PROJECT_STRUCTURE.md) para entender o layout.
+- Ver as telas em `android/app/src/main/java/com/paonosso/app/ui/screens/`.

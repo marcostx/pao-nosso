@@ -18,6 +18,7 @@ class StatusSolicitacao(enum.Enum):
     PENDENTE = "PENDENTE"
     ACEITA = "ACEITA"
     RECUSADA = "RECUSADA"
+    CANCELADA = "CANCELADA"
     CONCLUIDA = "CONCLUIDA"
 
 
@@ -29,8 +30,10 @@ class Solicitacao(db.Model):
     id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     doacao_id = Column(String(36), ForeignKey("doacoes.id"), nullable=False, index=True)
     instituicao_id = Column(String(36), ForeignKey("instituicoes.id"), nullable=False, index=True)
-    data_coleta_proposta = Column(Date, nullable=False)
-    hora_coleta_proposta = Column(Time, nullable=False)
+    # No fluxo v2 a data/hora vem da própria Doacao; ficam opcionais para
+    # propostas alternativas eventuais.
+    data_coleta_proposta = Column(Date, nullable=True)
+    hora_coleta_proposta = Column(Time, nullable=True)
     observacoes = Column(Text, nullable=True)
     status = Column(
         Enum(StatusSolicitacao), default=StatusSolicitacao.PENDENTE, nullable=False, index=True

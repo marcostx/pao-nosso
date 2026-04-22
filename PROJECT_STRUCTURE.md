@@ -1,252 +1,142 @@
 # Estrutura do Projeto Pão Nosso
 
-Visualização completa da estrutura de arquivos e pastas do projeto.
-
-## Árvore de Diretórios
+## Visão geral
 
 ```
 pao-nosso/
+├── README.md                  # Visão geral do projeto
+├── SPEC.md                    # Especificação técnica (modelo, API, telas)
+├── QUICK_START.md             # Como subir o projeto em poucos minutos
+├── PROJECT_STRUCTURE.md       # Este arquivo
+├── CONTRIBUTING.md
 │
-├── README.md                      # Documentação principal do projeto
-├── SPEC.md                        # Especificação técnica completa
-├── README_SETUP.md               # Guia de configuração detalhado
-├── QUICK_START.md                # Guia rápido de execução
-├── IMPLEMENTATION_SUMMARY.md     # Resumo da implementação
-├── PROJECT_STRUCTURE.md          # Este arquivo
-├── .gitignore                    # Arquivos ignorados pelo Git
+├── backend/                   # API REST (Python / Flask)
+│   ├── app.py                 # Aplicação Flask + registro de blueprints
+│   ├── config.py              # Configuração (SQLALCHEMY_*, JWT_*, CORS_*)
+│   ├── extensions.py          # db, jwt, cors
+│   ├── init_db.py             # Recria as tabelas no SQLite
+│   ├── requirements.txt
+│   ├── README.md              # Documentação do backend
+│   │
+│   ├── models/
+│   │   ├── usuario.py
+│   │   ├── instituicao.py     # bairro, sem lat/lng, aprovado em dev
+│   │   ├── doacao.py          # janela, horario, metodo_entrega, instituicao_id, bairro
+│   │   ├── solicitacao.py     # status PENDENTE/ACEITA/RECUSADA/CANCELADA/CONCLUIDA
+│   │   └── dispositivo_fcm.py
+│   │
+│   ├── routes/
+│   │   ├── auth.py
+│   │   ├── doacoes.py         # CRUD + /disponiveis + /minhas
+│   │   ├── solicitacoes.py    # CRUD + /agendamentos + accept/refuse/cancel/conclude
+│   │   ├── instituicoes.py    # CRUD + listagem aprovada
+│   │   ├── stats.py           # GET /api/stats/me
+│   │   └── health.py
+│   │
+│   ├── services/
+│   │   ├── donation_service.py  # Transições de status, auto-recusa de irmãs
+│   │   └── stats_service.py     # Agregação de estatísticas
+│   │
+│   ├── scripts/
+│   │   └── seed_dev.py        # Maria Silva + 3 instituições + doações de exemplo
+│   │
+│   ├── utils/validators.py
+│   │
+│   └── tests/
+│       ├── conftest.py        # Fixtures (app, client, doador, instituicao)
+│       ├── test_doacoes.py
+│       ├── test_solicitacoes.py
+│       ├── test_instituicoes.py
+│       └── test_stats.py
 │
-├── backend/                       # API REST (Python/Flask)
-│   │
-│   ├── app.py                    # Aplicação Flask principal
-│   ├── config.py                 # Configurações do app
-│   ├── extensions.py             # Extensões (DB, JWT, CORS)
-│   ├── init_db.py                # Script de inicialização do DB
-│   ├── requirements.txt          # Dependências Python
-│   ├── test_api.sh               # Script de testes
-│   ├── README.md                 # Documentação do backend
-│   ├── .env                      # Variáveis de ambiente (não versionado)
-│   ├── .env.example              # Exemplo de configuração
-│   ├── .gitignore                # Ignores específicos do backend
-│   │
-│   ├── models/                   # Modelos de dados (SQLAlchemy)
-│   │   ├── __init__.py           # Exporta todos os modelos
-│   │   ├── usuario.py            # Modelo Usuario (doador/instituição)
-│   │   ├── instituicao.py        # Modelo Instituicao
-│   │   ├── doacao.py             # Modelo Doacao
-│   │   ├── solicitacao.py        # Modelo Solicitacao
-│   │   └── dispositivo_fcm.py    # Modelo DispositivoFCM
-│   │
-│   ├── routes/                   # Rotas da API (endpoints)
-│   │   ├── __init__.py           # Exporta blueprints
-│   │   ├── auth.py               # Autenticação (register, login)
-│   │   └── health.py             # Health check
-│   │
-│   ├── services/                 # Serviços (lógica de negócio)
-│   │   └── __init__.py           # Preparado para expansão
-│   │
-│   ├── utils/                    # Utilitários
-│   │   ├── __init__.py           #
-│   │   └── validators.py         # Validações (email, senha, etc)
-│   │
-│   ├── instance/                 # Instância do banco (criado automaticamente)
-│   │   └── paonosso.db           # SQLite database
-│   │
-│   └── venv/                     # Ambiente virtual Python (não versionado)
-│       └── ...                   # Dependências instaladas
-│
-└── android/                      # App Android (Kotlin)
+└── android/                   # App Android (Kotlin + Jetpack Compose)
+    ├── settings.gradle.kts
+    ├── build.gradle.kts
+    ├── gradle.properties
+    ├── README.md
     │
-    ├── settings.gradle.kts       # Configuração do projeto
-    ├── build.gradle.kts          # Build do projeto
-    ├── gradle.properties         # Propriedades do Gradle
-    ├── README.md                 # Documentação do Android
-    ├── .gitignore                # Ignores do Android
-    │
-    ├── gradle/wrapper/           # Gradle wrapper
-    │   └── gradle-wrapper.properties #
-    │
-    └── app/                      # Módulo do aplicativo
-        │
-        ├── build.gradle.kts      # Dependências do app
-        ├── proguard-rules.pro    # Regras de ofuscação
-        │
+    └── app/
+        ├── build.gradle.kts   # Compose BOM, Material3, Navigation Compose, Coil, DataStore
         └── src/main/
-            │
-            ├── AndroidManifest.xml  # Configuração do app
+            ├── AndroidManifest.xml   # Sem permissões de localização
             │
             ├── java/com/paonosso/app/
+            │   ├── PaoNossoApplication.kt   # Inicializa AppContainer
+            │   ├── MainActivity.kt          # ComponentActivity → AppNavHost
             │   │
-            │   ├── PaoNossoApplication.kt  # Application class
-            │   ├── MainActivity.kt         # Activity principal
+            │   ├── data/
+            │   │   ├── AppContainer.kt          # Service locator (DI manual)
+            │   │   ├── api/
+            │   │   │   ├── ApiService.kt        # Retrofit interface (todas as rotas)
+            │   │   │   ├── ApiClient.kt         # OkHttp + Retrofit + BuildConfig.API_BASE_URL
+            │   │   │   └── AuthInterceptor.kt   # Injeta Bearer token
+            │   │   ├── local/
+            │   │   │   └── TokenStore.kt        # DataStore preferences
+            │   │   ├── model/
+            │   │   │   └── Models.kt            # Donation, Appointment, Institution, Stats…
+            │   │   └── repository/
+            │   │       ├── AuthRepository.kt
+            │   │       ├── DonationRepository.kt
+            │   │       ├── InstitutionRepository.kt
+            │   │       ├── AppointmentRepository.kt
+            │   │       └── StatsRepository.kt
             │   │
-            │   └── data/
-            │       │
-            │       ├── api/
-            │       │   ├── ApiService.kt      # Interface Retrofit
-            │       │   └── ApiClient.kt       # Cliente HTTP
-            │       │
-            │       └── model/
-            │           └── Models.kt          # Data classes
+            │   ├── ui/
+            │   │   ├── theme/        # Color, Type, Shape, Theme (paleta esmeralda)
+            │   │   ├── components/   # AppScaffold (BottomBar + FAB), StatusPill, EmptyState
+            │   │   ├── nav/          # Routes.kt, AppNavHost.kt
+            │   │   └── screens/
+            │   │       ├── auth/         # LoginScreen, RegisterScreen
+            │   │       ├── home/         # HomeScreen (doador)
+            │   │       ├── agenda/       # AgendaScreen (doador)
+            │   │       ├── donate/       # DonateFlowScreen (3 steps)
+            │   │       ├── map/          # MapPlaceholderScreen
+            │   │       ├── profile/      # ProfileScreen
+            │   │       └── institution/  # InstitutionHomeScreen, InstitutionRequestsScreen
+            │   │
+            │   └── viewmodel/        # AuthVM, HomeVM, AgendaVM, DonateVM, ProfileVM,
+            │                          # InstitutionHomeVM, InstitutionRequestsVM
             │
-            └── res/                  # Recursos do app
-                │
-                ├── layout/
-                │   └── activity_main.xml      # Layout da tela principal
-                │
-                ├── values/
-                │   ├── strings.xml            # Textos (PT-BR)
-                │   ├── colors.xml             # Paleta de cores
-                │   └── themes.xml             # Tema Material
-                │
-                └── xml/
-                    ├── data_extraction_rules.xml
-                    └── backup_rules.xml
+            └── res/values/
+                ├── strings.xml
+                ├── colors.xml
+                └── themes.xml        # Theme.PaoNosso (sem ActionBar, status emerald)
 ```
 
-## Estatísticas
+## Onde começar
 
-### Backend (Python)
+**Backend**
 
-| Categoria | Quantidade |
-|-----------|------------|
-| Arquivos Python | 14 |
-| Modelos de dados | 5 |
-| Rotas (blueprints) | 2 |
-| Endpoints | 6 |
-| Tabelas no DB | 5 |
-| Dependências | 17 |
+1. `backend/app.py` — registra todos os blueprints.
+2. `backend/models/doacao.py` e `solicitacao.py` — modelo central da v2.
+3. `backend/services/donation_service.py` — regras de negócio (auto-recusa,
+   transições de status).
+4. `backend/tests/` — exemplos completos de uso da API.
 
-### Android (Kotlin)
+**Android**
 
-| Categoria | Quantidade |
-|-----------|------------|
-| Arquivos Kotlin | 5 |
-| Activities | 1 |
-| Layouts XML | 1 |
-| Resources | 6 |
-| Dependências | 15+ |
+1. `MainActivity.kt` → `ui/nav/AppNavHost.kt` — ponto de entrada Compose.
+2. `ui/components/AppScaffold.kt` — bottom bar + FAB central que sustenta o
+   shell do doador.
+3. `ui/screens/donate/DonateFlowScreen.kt` — wizard de Nova Doação (mocks
+   fielmente reproduzidos).
+4. `data/AppContainer.kt` — DI leve (service locator) usado pelos
+   `ViewModels`.
 
-### Documentação
+## Convenções
 
-| Arquivo | Descrição | Linhas |
-|---------|-----------|--------|
-| `README.md` | Visão geral do projeto | 165 |
-| `SPEC.md` | Especificação técnica | 547 |
-| `README_SETUP.md` | Guia de configuração | 300+ |
-| `QUICK_START.md` | Início rápido | 300+ |
-| `IMPLEMENTATION_SUMMARY.md` | Resumo da implementação | 400+ |
-| `backend/README.md` | Docs do backend | 150+ |
-| `android/README.md` | Docs do Android | 200+ |
+- Backend usa Flask + SQLAlchemy 2.0 (declarative). Toda regra de negócio
+  fora de transições triviais mora em `services/`.
+- Android segue MVVM com `StateFlow`. Cada tela tem um `*UiState` data
+  class e um `Factory` no ViewModel para receber as repos do `AppContainer`.
+- Sem injeção de dependência por anotação (Hilt) no MVP — manter o setup
+  enxuto. O `AppContainer` é criado em `PaoNossoApplication`.
+- Toda chamada autenticada passa por `AuthInterceptor`; o token vive em
+  DataStore (`TokenStore`).
 
-**Total de documentação:** ~2.000+ linhas
+## Fora do MVP
 
-## Arquivos-Chave
-
-### Backend
-
-```python
-# Ponto de entrada principal
-backend/app.py
-
-# Configuração
-backend/config.py
-backend/extensions.py
-
-# Modelos principais
-backend/models/usuario.py
-backend/models/doacao.py
-
-# Autenticação
-backend/routes/auth.py
-
-# Testes
-backend/test_api.sh
-```
-
-### Android
-
-```kotlin
-// Ponto de entrada principal
-android/app/src/main/java/com/paonosso/app/MainActivity.kt
-
-// Networking
-android/app/src/main/java/com/paonosso/app/data/api/ApiClient.kt
-android/app/src/main/java/com/paonosso/app/data/api/ApiService.kt
-
-// Modelos
-android/app/src/main/java/com/paonosso/app/data/model/Models.kt
-
-// Layout
-android/app/src/main/res/layout/activity_main.xml
-
-// Configuração
-android/app/src/main/res/values/strings.xml
-```
-
-## Como Navegar
-
-### Para Backend:
-
-1. **Começar por:** `backend/app.py`
-2. **Entender modelos:** `backend/models/`
-3. **Ver endpoints:** `backend/routes/`
-4. **Testar:** `backend/test_api.sh`
-
-### Para Android:
-
-1. **Começar por:** `MainActivity.kt`
-2. **Ver networking:** `data/api/`
-3. **Entender dados:** `data/model/Models.kt`
-4. **Ver UI:** `res/layout/activity_main.xml`
-
-## Tamanho do Projeto
-
-```
-Backend (sem venv):     ~50 KB
-Android (sem build):    ~30 KB
-Documentação:           ~100 KB
-Total (fonte):          ~180 KB
-
-Com dependências:
-Backend (com venv):     ~50 MB
-Android (com build):    ~200 MB
-```
-
-## Checklist de Arquivos
-
-### Essenciais
-
-- [x] README.md principal
-- [x] Especificação técnica (SPEC.md)
-- [x] Guias de setup
-- [x] .gitignore (raiz, backend, android)
-
-### Backend
-
-- [x] app.py (servidor Flask)
-- [x] requirements.txt
-- [x] 5 modelos de dados
-- [x] Rotas de autenticação
-- [x] Script de testes
-
-### Android
-
-- [x] MainActivity
-- [x] API Client (Retrofit)
-- [x] Layouts XML
-- [x] Strings em PT-BR
-- [x] Gradle configs
-
-## Arquivos Executáveis
-
-```bash
-# Backend
-backend/app.py              # Inicia servidor
-backend/init_db.py          # Inicializa DB
-backend/test_api.sh         # Testa API
-
-# Android
-# Executar via Android Studio ou:
-android/gradlew assembleDebug  # Build APK
-```
-
+- Google Maps SDK e geocoding — substituídos pelo placeholder de mapa.
+- FCM / push notifications.
+- Upload de fotos.
+- Painel administrativo web.

@@ -1,259 +1,138 @@
-# Pão Nosso - Guia de Configuração e Execução
+# Pão Nosso — Guia de Configuração e Execução
 
-Guia completo para configurar e executar o projeto Pão Nosso localmente.
-
-## Visão Geral
-
-O Pão Nosso é composto por dois componentes principais:
-
-1. **Backend (Python/Flask)**: API REST que gerencia usuários, doações e solicitações
-2. **Android App (Kotlin)**: Aplicativo mobile que consome a API
+Guia detalhado. Para uma versão curta veja [`QUICK_START.md`](QUICK_START.md).
 
 ## Pré-requisitos
 
-### Para o Backend:
-- Python 3.9+ 
-- pip
-- Ambiente virtual Python (venv)
+- **Backend:** Python 3.10+, pip, venv.
+- **Android:** Android Studio Hedgehog (2023.1.1) ou superior, JDK 17,
+  Android SDK 34, Compose-compatible compiler (Kotlin 1.9.x já incluso no
+  projeto).
 
-### Para o Android:
-- Android Studio Arctic Fox ou superior
-- JDK 8+
-- Android SDK (API 24-34)
-
-## Configuração Rápida (Quick Start)
-
-### Passo 1: Backend
+## 1. Backend
 
 ```bash
-# 1. Navegar para a pasta do backend
 cd backend
-
-# 2. Criar e ativar ambiente virtual
 python3 -m venv venv
-source venv/bin/activate  # No Windows: venv\Scripts\activate
-
-# 3. Instalar dependências
+source venv/bin/activate                # Windows: venv\Scripts\activate
 pip install -r requirements.txt
-
-# 4. Inicializar banco de dados
-python init_db.py
-
-# 5. Iniciar servidor
-python app.py
+python init_db.py                       # cria SQLite em instance/paonosso.db
+python scripts/seed_dev.py              # opcional, popula com Maria Silva + 3 instituições
+python app.py                           # http://localhost:5000
 ```
 
-**Servidor rodando em:** `http://localhost:5000`
-
-#### Testar Backend:
+Health check:
 
 ```bash
-# Health check
 curl http://localhost:5000/health
-
-# Ou executar script de testes completo
-./test_api.sh
 ```
 
-### Passo 2: Android App
+Testes:
 
 ```bash
-# 1. Abrir Android Studio
-
-# 2. File > Open > Selecionar pasta 'android/'
-
-# 3. Aguardar sincronização do Gradle
-
-# 4. Criar/iniciar emulador Android ou conectar dispositivo físico
-
-# 5. Clicar em Run
+pytest
 ```
 
-**Importante:** Certifique-se de que o backend está rodando antes de executar o app!
+## 2. Android
 
-## Configuração para Dispositivo Físico
+1. Abra `android/` no Android Studio.
+2. Aguarde o Gradle sincronizar (Compose BOM, Material3, Retrofit, OkHttp,
+   DataStore, Coil, Navigation Compose).
+3. Selecione um AVD (API 24+, recomendado API 34) e clique **Run**. O
+   debug build aponta para `http://10.0.2.2:5000`.
 
-Se estiver usando um dispositivo físico Android:
+### Apontando para outro endereço
 
-1. Descubra o IP da sua máquina:
-   ```bash
-   # macOS/Linux
-   ifconfig | grep inet
-   
-   # Windows
-   ipconfig
-   ```
+Edite `android/app/build.gradle.kts`:
 
-2. Edite `android/app/src/main/res/values/strings.xml`:
-   ```xml
-   <!-- Substitua 10.0.2.2 pelo IP da sua máquina -->
-   <string name="api_base_url">http://192.168.1.100:5000</string>
-   ```
-
-3. Certifique-se de que o dispositivo está na mesma rede Wi-Fi
-
-## Testando a Integração Completa
-
-### Teste 1: Health Check
-
-No app Android, você deve ver:
-```
-Conectado ao servidor
-Backend: Pão Nosso API está funcionando!
-Versão: 1.0.0
+```kotlin
+buildTypes {
+    debug {
+        buildConfigField("String", "API_BASE_URL", "\"http://192.168.0.10:5000/\"")
+    }
+    release {
+        buildConfigField("String", "API_BASE_URL", "\"https://api.paonosso.app/\"")
+    }
+}
 ```
 
-### Teste 2: Via cURL (Terminal)
+Depois faça `Build > Rebuild Project`.
+
+## 3. Smoke test integrado
+
+Crie usuários via cURL (ou use os do seed):
 
 ```bash
-# 1. Registrar um doador
+# Doador
 curl -X POST http://localhost:5000/api/auth/register \
   -H "Content-Type: application/json" \
-  -d '{
-    "nome": "João Silva",
-    "email": "joao@email.com",
-    "senha": "senha123",
-    "telefone": "11999999999",
-    "tipo": "DOADOR"
-  }'
+  -d '{"nome":"Joao","email":"joao@test.com","senha":"senha123","telefone":"11999999999","tipo":"DOADOR"}'
 
-# 2. Fazer login
+# Login
 curl -X POST http://localhost:5000/api/auth/login \
   -H "Content-Type: application/json" \
-  -d '{
-    "email": "joao@email.com",
-    "senha": "senha123"
-  }'
+  -d '{"email":"joao@test.com","senha":"senha123"}'
 ```
 
-## Estrutura do Projeto
+Use as credenciais para entrar no app.
 
-```
-pao-nosso/
-├── README.md                  # Documentação principal
-├── SPEC.md                    # Especificação técnica
-├── README_SETUP.md           # Este arquivo
-├── backend/                   # API Flask
-│   ├── app.py                # Aplicação principal
-│   ├── models/               # Modelos de dados
-│   ├── routes/               # Endpoints da API
-│   ├── utils/                # Utilitários
-│   ├── requirements.txt      # Dependências Python
-│   ├── init_db.py           # Script de inicialização do DB
-│   ├── test_api.sh          # Script de testes
-│   └── README.md            # Documentação do backend
-└── android/                   # App Android
-    ├── app/                  # Código do app
-    │   ├── src/main/
-    │   │   ├── java/         # Código Kotlin
-    │   │   └── res/          # Recursos (layouts, strings, etc)
-    │   └── build.gradle.kts  # Dependências do app
-    └── README.md            # Documentação do Android
-```
-
-## Comandos Úteis
+## 4. Comandos úteis
 
 ### Backend
 
 ```bash
-# Recriar banco de dados (apaga dados existentes!)
+# Resetar banco
+rm instance/paonosso.db
 python init_db.py
+python scripts/seed_dev.py
 
-# Executar testes da API
-./test_api.sh
-
-# Ver logs do servidor
-# Os logs aparecem no terminal onde você executou python app.py
+# Rodar testes específicos
+pytest tests/test_doacoes.py -v
 ```
 
 ### Android
 
 ```bash
-# Limpar build
 cd android
 ./gradlew clean
-
-# Build debug
 ./gradlew assembleDebug
-
-# Instalar no dispositivo
 ./gradlew installDebug
 ```
 
-## Problemas Comuns
+## 5. Problemas comuns
 
-### 1. Backend não inicia
+**`ModuleNotFoundError`** — ative o venv: `source venv/bin/activate`.
 
-**Erro:** `ModuleNotFoundError: No module named 'flask'`
+**App não conecta** — confirme `API_BASE_URL`, e se for dispositivo físico
+verifique se ele está na mesma rede Wi-Fi do backend.
 
-**Solução:**
-```bash
-# Certifique-se de estar no ambiente virtual
-source venv/bin/activate
-pip install -r requirements.txt
-```
+**Gradle Sync falhou** —
+`cd android && ./gradlew clean --refresh-dependencies`.
 
-### 2. App não conecta ao backend
+**Banco com schema antigo** — `rm instance/paonosso.db && python init_db.py`.
 
-**Sintomas:** "Erro de conexão"
+## 6. Status do MVP
 
-**Soluções:**
-- Backend está rodando? Teste: `curl http://localhost:5000/health`
-- Usando emulador? URL deve ser `http://10.0.2.2:5000`
-- Usando dispositivo físico? Atualize o IP em `strings.xml`
-- Dispositivo está na mesma rede Wi-Fi?
+### Implementado (v2)
 
-### 3. Erro de permissão no banco de dados
+- Backend: auth, doações, solicitações, instituições, stats, seed e testes.
+- Android Compose: auth, shell do doador (Home, Agenda, Mapa placeholder,
+  Perfil), wizard de Nova Doação em 3 passos, shell mínimo da instituição
+  (lista de doações + caixa de pedidos).
+- `AuthInterceptor` + `TokenStore` (DataStore) cuidam do JWT por baixo do
+  pano.
 
-**Solução:**
-```bash
-cd backend
-rm paonosso.db  # Remove banco antigo
-python init_db.py  # Recria
-```
+### Fora do MVP (Fase 2)
 
-### 4. Gradle Sync Failed no Android
-
-**Solução:**
-```bash
-cd android
-./gradlew clean --refresh-dependencies
-```
-
-### 5. App not showing in the simulator env (or device)
-- missing minimap images
-
-## Status do MVP
-
-### Implementado
-- [x] Backend API com Flask
-- [x] Banco de dados SQLite
-- [x] Modelos de dados (Usuario, Instituicao, Doacao, Solicitacao)
-- [x] Endpoints de autenticação (registro, login)
-- [x] Health check endpoint
-- [x] App Android básico
-- [x] Comunicação Android ↔ Backend
-- [x] Verificação de conexão
-
-### Em Desenvolvimento
-- [ ] Telas de login/registro no Android
-- [ ] Endpoints de doações e instituições
-- [ ] Navegação entre telas
-- [ ] Persistência de token JWT
-- [ ] Busca de doações por localização
-
-### Próximas Fases
-- [ ] Google Maps integração
-- [ ] Notificações push (FCM)
-- [ ] Upload de fotos
-- [ ] Chat entre usuários
-- [ ] Deploy em produção
+- Mapa real e proximidade (hoje só placeholder).
+- Push notifications (FCM).
+- Upload de fotos para doações.
+- Painel administrativo web.
 
 ## Suporte
 
-Em caso de dúvidas ou problemas:
+Consulte:
 
-2. Consulte os READMEs específicos:
-   - `backend/README.md`
-   - `android/README.md`
-3. Verifique os logs do servidor e do Logcat
+- [`backend/README.md`](backend/README.md)
+- [`android/README.md`](android/README.md)
+- Logs do `python app.py` e do Logcat (Android Studio).
