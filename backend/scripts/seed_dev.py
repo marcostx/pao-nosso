@@ -4,17 +4,25 @@ Seed do ambiente de desenvolvimento.
 Cria:
 - Doador "Maria Silva" (email maria@paonosso.dev / senha 123456)
 - Tres instituicoes aprovadas (mock)
-- Uma doacao DISPONIVEL "Cesta de Frutas" com solicitacao ACEITA na primeira instituicao
+- Uma doacao RESERVADA "Cesta de Frutas" com solicitacao ACEITA na primeira instituicao
 - Uma doacao DISPONIVEL "5kg de Arroz" com solicitacao PENDENTE na segunda instituicao
 
-Uso:
-    cd backend
-    . venv/bin/activate
+Uso (a partir da pasta backend/):
+    python scripts/seed_dev.py
+    # ou, equivalente:
     python -m scripts.seed_dev
 """
 
+import os
 import sys
 from datetime import time
+
+# Permite executar tanto `python scripts/seed_dev.py` (a partir de backend/)
+# quanto `python -m scripts.seed_dev`. No primeiro caso, sys.path[0] e' a
+# pasta scripts/ e o pacote `app` nao e' encontrado sem o ajuste abaixo.
+_BACKEND_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if _BACKEND_DIR not in sys.path:
+    sys.path.insert(0, _BACKEND_DIR)
 
 import bcrypt
 

@@ -59,6 +59,14 @@ class AgendaViewModel(private val repo: AppointmentRepository) : ViewModel() {
         }
     }
 
+    /** Cancela uma Doacao "solta" (item AGUARDANDO na agenda) via DELETE doacao. */
+    fun cancelDoacao(doacaoId: String) {
+        viewModelScope.launch {
+            repo.cancelDoacao(doacaoId)
+            refresh()
+        }
+    }
+
     companion object {
         val Factory: ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")

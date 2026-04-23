@@ -3,7 +3,7 @@ Authentication routes
 """
 
 import bcrypt
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, current_app, jsonify, request
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
 
 from extensions import db
@@ -77,6 +77,7 @@ def register():
 
     except Exception as e:
         db.session.rollback()
+        current_app.logger.exception("Erro inesperado em /api/auth/register")
         return jsonify({"error": f"Erro ao criar usuário: {str(e)}"}), 500
 
 
@@ -118,6 +119,7 @@ def login():
         )
 
     except Exception as e:
+        current_app.logger.exception("Erro inesperado em /api/auth/login")
         return jsonify({"error": f"Erro ao fazer login: {str(e)}"}), 500
 
 
@@ -135,6 +137,7 @@ def get_current_user():
         return jsonify(usuario.to_dict()), 200
 
     except Exception as e:
+        current_app.logger.exception("Erro inesperado em /api/auth/me")
         return jsonify({"error": f"Erro ao buscar usuário: {str(e)}"}), 500
 
 

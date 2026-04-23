@@ -6,7 +6,7 @@ Pao Nosso v2: list-based UX, no map / no lat-lng filters.
 
 from datetime import time
 
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, current_app, jsonify, request
 from flask_jwt_extended import get_jwt_identity, jwt_required
 
 from extensions import db
@@ -120,6 +120,7 @@ def criar_doacao():
 
     except Exception as e:  # pragma: no cover - defensive
         db.session.rollback()
+        current_app.logger.exception("Erro inesperado em POST /api/doacoes")
         return jsonify({"error": f"Erro ao criar doacao: {str(e)}"}), 500
 
 
@@ -158,6 +159,7 @@ def listar_disponiveis():
         return jsonify([d.to_dict() for d in doacoes]), 200
 
     except Exception as e:  # pragma: no cover - defensive
+        current_app.logger.exception("Erro inesperado em GET /api/doacoes/disponiveis")
         return jsonify({"error": f"Erro ao listar: {str(e)}"}), 500
 
 

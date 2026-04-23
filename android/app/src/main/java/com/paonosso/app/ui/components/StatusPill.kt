@@ -14,13 +14,15 @@ import androidx.compose.ui.unit.sp
 import com.paonosso.app.ui.theme.Emerald100
 import com.paonosso.app.ui.theme.Emerald700
 import com.paonosso.app.ui.theme.Gray100
+import com.paonosso.app.ui.theme.Gray200
 import com.paonosso.app.ui.theme.Gray500
+import com.paonosso.app.ui.theme.Gray700
 import com.paonosso.app.ui.theme.Orange100
 import com.paonosso.app.ui.theme.Orange700
 import com.paonosso.app.ui.theme.Red100
 import com.paonosso.app.ui.theme.Red700
 
-enum class StatusKind { Confirmado, Pendente, Recusado, Concluido, Cancelado, Neutro }
+enum class StatusKind { Confirmado, Pendente, Recusado, Concluido, Cancelado, Aguardando, Neutro }
 
 fun statusKindFor(status: String?): StatusKind = when (status?.uppercase()) {
     "ACEITA", "CONFIRMADO" -> StatusKind.Confirmado
@@ -28,6 +30,7 @@ fun statusKindFor(status: String?): StatusKind = when (status?.uppercase()) {
     "RECUSADA", "RECUSADO" -> StatusKind.Recusado
     "CONCLUIDA", "CONCLUIDO" -> StatusKind.Concluido
     "CANCELADA", "CANCELADO" -> StatusKind.Cancelado
+    "AGUARDANDO" -> StatusKind.Aguardando
     else -> StatusKind.Neutro
 }
 
@@ -37,6 +40,7 @@ fun displayStatus(status: String?): String = when (status?.uppercase()) {
     "RECUSADA" -> "Recusado"
     "CONCLUIDA" -> "Concluido"
     "CANCELADA" -> "Cancelado"
+    "AGUARDANDO" -> "Aguardando"
     else -> status ?: ""
 }
 
@@ -49,6 +53,7 @@ fun StatusPill(status: String?, modifier: Modifier = Modifier) {
         StatusKind.Recusado -> Red100 to Red700
         StatusKind.Cancelado -> Red100 to Red700
         StatusKind.Concluido -> Emerald100 to Emerald700
+        StatusKind.Aguardando -> Gray200 to Gray700
         StatusKind.Neutro -> Gray100 to Gray500
     }
     Text(

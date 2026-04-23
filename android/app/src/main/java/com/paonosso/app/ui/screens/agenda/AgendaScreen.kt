@@ -76,6 +76,7 @@ fun AgendaScreen(contentPadding: PaddingValues) {
                         onConclude = { vm.conclude(ap.id) },
                         onAccept = { vm.accept(ap.id) },
                         onRefuse = { vm.refuse(ap.id) },
+                        onCancelDoacao = { ap.doacaoId?.let(vm::cancelDoacao) },
                     )
                 }
             }
@@ -90,6 +91,7 @@ private fun AppointmentItem(
     onConclude: () -> Unit,
     onAccept: () -> Unit,
     onRefuse: () -> Unit,
+    onCancelDoacao: () -> Unit,
 ) {
     Surface(
         shape = RoundedCornerShape(20.dp),
@@ -104,7 +106,11 @@ private fun AppointmentItem(
                         fontWeight = FontWeight.Bold,
                         color = Gray800,
                     )
-                    ap.instituicaoNome?.let {
+                    val subtitle = ap.instituicaoNome
+                        ?: if (ap.status.uppercase() == "AGUARDANDO") {
+                            "Aguardando interesse de uma instituicao"
+                        } else null
+                    subtitle?.let {
                         Text(it, color = Gray500, style = MaterialTheme.typography.bodySmall)
                     }
                     Text(
@@ -150,6 +156,10 @@ private fun AppointmentItem(
                         modifier = Modifier.weight(1f),
                     ) { Text("Cancelar", color = Red500) }
                 }
+                "AGUARDANDO" -> OutlinedButton(
+                    onClick = onCancelDoacao,
+                    modifier = Modifier.fillMaxWidth(),
+                ) { Text("Cancelar doacao", color = Red500) }
                 else -> Spacer(Modifier.size(0.dp))
             }
         }

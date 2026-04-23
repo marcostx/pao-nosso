@@ -70,10 +70,10 @@ Detalhes completos em [`SPEC.md`](../SPEC.md) §4.
 curl http://localhost:5000/health
 curl -X POST http://localhost:5000/api/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"email":"maria@example.com","senha":"senha123"}'
+  -d '{"email":"maria@paonosso.dev","senha":"123456"}'
 ```
 
-(`maria@example.com / senha123` existe se você rodou o seed.)
+(`maria@paonosso.dev / 123456` existe se você rodou o seed.)
 
 ## Testes
 

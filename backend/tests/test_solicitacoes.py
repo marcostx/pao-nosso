@@ -144,6 +144,78 @@ def test_agendamentos_filtro_status(client, doador, instituicao):
     assert items[0]["item"] == "Arroz"
 
 
+def test_agendamentos_inclui_doacao_aguardando_para_doador(client, doador):
+    """Doacao SOLICITAR_COLETA recem-criada (sem solicitacao) deve aparecer
+    como item sintetico AGUARDANDO na agenda do doador, para que ele veja
+    a doacao logo apos confirma-la."""
+    doacao = _criar_doacao_solicitar_coleta(client, doador, titulo="Pao Frances")
+
+    r = client.get("/api/solicitacoes/agendamentos", headers=doador["headers"])
+    assert r.status_code == 200
+    items = r.get_json()
+    assert len(items) == 1
+    assert items[0]["tipo"] == "doacao"
+    assert items[0]["status"] == "AGUARDANDO"
+    assert items[0]["item"] == "Pao Frances"
+    assert items[0]["doacao_id"] == doacao["id"]
+    assert items[0]["id"] == doacao["id"]  # id == doacao_id quando tipo=doacao
+
+
+def test_agendamentos_oculta_doacao_apos_solicitacao_ativa(client, doador, instituicao):
+    """Quando a instituicao envia uma solicitacao, a doacao some do bucket
+    AGUARDANDO e passa a aparecer somente como item tipo=solicitacao."""
+    doacao = _criar_doacao_solicitar_coleta(client, doador, titulo="Feijao")
+
+    # Antes da solicitacao: 1 item AGUARDANDO
+    r = client.get("/api/solicitacoes/agendamentos", headers=doador["headers"])
+    assert len(r.get_json()) == 1
+    assert r.get_json()[0]["status"] == "AGUARDANDO"
+
+    # Instituicao solicita
+    client.post(
+        "/api/solicitacoes",
+        json={"doacao_id": doacao["id"]},
+        headers=instituicao["headers"],
+    )
+
+    r = client.get("/api/solicitacoes/agendamentos", headers=doador["headers"])
+    items = r.get_json()
+    assert len(items) == 1
+    assert items[0]["tipo"] == "solicitacao"
+    assert items[0]["status"] == "PENDENTE"
+
+
+def test_agendamentos_filtro_aguardando(client, doador, instituicao):
+    """Filtro ?status=AGUARDANDO deve devolver apenas as doacoes sem
+    solicitacao ativa, ignorando solicitacoes."""
+    doacao_sem_solicit = _criar_doacao_solicitar_coleta(client, doador, titulo="Pao")
+    doacao_com_solicit = _criar_doacao_solicitar_coleta(client, doador, titulo="Arroz")
+    client.post(
+        "/api/solicitacoes",
+        json={"doacao_id": doacao_com_solicit["id"]},
+        headers=instituicao["headers"],
+    )
+
+    r = client.get(
+        "/api/solicitacoes/agendamentos?status=AGUARDANDO",
+        headers=doador["headers"],
+    )
+    items = r.get_json()
+    assert len(items) == 1
+    assert items[0]["doacao_id"] == doacao_sem_solicit["id"]
+    assert items[0]["status"] == "AGUARDANDO"
+
+
+def test_agendamentos_instituicao_ignora_filtro_aguardando(client, instituicao):
+    """AGUARDANDO so faz sentido na visao do doador; instituicao recebe lista vazia."""
+    r = client.get(
+        "/api/solicitacoes/agendamentos?status=AGUARDANDO",
+        headers=instituicao["headers"],
+    )
+    assert r.status_code == 200
+    assert r.get_json() == []
+
+
 def test_endpoints_exigem_token(client):
     assert client.get("/api/solicitacoes/recebidas").status_code == 401
     assert client.get("/api/solicitacoes/agendamentos").status_code == 401

@@ -52,6 +52,7 @@ def _agendamento_dict(solicitacao: Solicitacao) -> dict:
     instituicao = solicitacao.instituicao
     return {
         "id": str(solicitacao.id),
+        "tipo": "solicitacao",
         "doacao_id": str(doacao.id) if doacao else None,
         "item": doacao.titulo if doacao else None,
         "categoria": doacao.categoria.value if doacao and doacao.categoria else None,
@@ -64,6 +65,32 @@ def _agendamento_dict(solicitacao: Solicitacao) -> dict:
         "status": solicitacao.status.value,
         "created_at": solicitacao.created_at.isoformat(),
         "updated_at": solicitacao.updated_at.isoformat(),
+    }
+
+
+def _agendamento_doacao_dict(doacao: Doacao) -> dict:
+    """Visualiza uma Doacao "solta" (sem solicitacao ativa) na agenda do doador.
+
+    Usado quando o doador escolheu ``SOLICITAR_COLETA`` e ainda nenhuma
+    instituicao manifestou interesse. ``id`` e' o proprio doacao_id (nao
+    existe solicitacao a referenciar). O cliente diferencia pelo campo
+    ``tipo: "doacao"`` e cancela via ``DELETE /api/doacoes/{id}``.
+    """
+    return {
+        "id": str(doacao.id),
+        "tipo": "doacao",
+        "doacao_id": str(doacao.id),
+        "item": doacao.titulo,
+        "categoria": doacao.categoria.value if doacao.categoria else None,
+        "metodo": doacao.metodo_entrega.value if doacao.metodo_entrega else None,
+        "janela": doacao.janela.value if doacao.janela else None,
+        "horario": doacao.horario.isoformat() if doacao.horario else None,
+        "endereco": doacao.endereco_retirada,
+        "instituicao_id": None,
+        "instituicao_nome": None,
+        "status": "AGUARDANDO",
+        "created_at": doacao.created_at.isoformat(),
+        "updated_at": doacao.updated_at.isoformat(),
     }
 
 
@@ -168,34 +195,69 @@ def listar_enviadas():
 def listar_agendamentos():
     """Lista achatada usada pela aba "Agenda" do app (mock).
 
-    Para o doador: solicitacoes vinculadas as suas doacoes.
+    Para o doador: solicitacoes vinculadas as suas doacoes + doacoes
+    DISPONIVEL sem nenhuma solicitacao ativa (status sintetico
+    ``AGUARDANDO`` — tipico de SOLICITAR_COLETA recem-criado).
     Para a instituicao: solicitacoes feitas por ela.
 
-    Filtro opcional: ?status=PENDENTE|ACEITA|...
+    Filtro opcional: ``?status=PENDENTE|ACEITA|RECUSADA|CANCELADA|CONCLUIDA|AGUARDANDO``.
+    Para a instituicao o filtro ``AGUARDANDO`` retorna lista vazia (so faz
+    sentido na visao do doador).
     """
     user_id = get_jwt_identity()
     usuario = Usuario.query.get(user_id)
     if not usuario:
         return jsonify({"error": "Usuario nao encontrado"}), 404
 
-    if usuario.tipo == TipoUsuario.DOADOR:
-        query = Solicitacao.query.join(Doacao).filter(Doacao.doador_id == user_id)
-    else:
+    status_str = request.args.get("status")
+    is_aguardando_filter = status_str == "AGUARDANDO"
+
+    if usuario.tipo == TipoUsuario.INSTITUICAO:
         instituicao = get_instituicao_for_user(user_id)
-        if not instituicao:
+        if not instituicao or is_aguardando_filter:
             return jsonify([]), 200
         query = Solicitacao.query.filter_by(instituicao_id=instituicao.id)
+        if status_str:
+            try:
+                status_enum = StatusSolicitacao[status_str]
+            except KeyError:
+                return jsonify({"error": "status invalido"}), 400
+            query = query.filter(Solicitacao.status == status_enum)
+        solicitacoes = query.order_by(Solicitacao.created_at.desc()).all()
+        return jsonify([_agendamento_dict(s) for s in solicitacoes]), 200
 
-    status_str = request.args.get("status")
-    if status_str:
-        try:
-            status_enum = StatusSolicitacao[status_str]
-        except KeyError:
-            return jsonify({"error": "status invalido"}), 400
-        query = query.filter(Solicitacao.status == status_enum)
+    # Doador: combina solicitacoes vinculadas as suas doacoes + doacoes
+    # DISPONIVEL sem nenhuma solicitacao ativa.
+    items: list[dict] = []
 
-    solicitacoes = query.order_by(Solicitacao.created_at.desc()).all()
-    return jsonify([_agendamento_dict(s) for s in solicitacoes]), 200
+    if not is_aguardando_filter:
+        sol_query = Solicitacao.query.join(Doacao).filter(Doacao.doador_id == user_id)
+        if status_str:
+            try:
+                status_enum = StatusSolicitacao[status_str]
+            except KeyError:
+                return jsonify({"error": "status invalido"}), 400
+            sol_query = sol_query.filter(Solicitacao.status == status_enum)
+        solicitacoes = sol_query.order_by(Solicitacao.created_at.desc()).all()
+        items.extend(_agendamento_dict(s) for s in solicitacoes)
+
+    if status_str is None or is_aguardando_filter:
+        active_doacao_ids_subq = (
+            db.session.query(Solicitacao.doacao_id)
+            .filter(Solicitacao.status.in_([StatusSolicitacao.PENDENTE, StatusSolicitacao.ACEITA]))
+            .subquery()
+        )
+        doacoes_aguardando = (
+            Doacao.query.filter(Doacao.doador_id == user_id)
+            .filter(Doacao.status == StatusDoacao.DISPONIVEL)
+            .filter(~Doacao.id.in_(db.session.query(active_doacao_ids_subq.c.doacao_id)))
+            .order_by(Doacao.created_at.desc())
+            .all()
+        )
+        items.extend(_agendamento_doacao_dict(d) for d in doacoes_aguardando)
+
+    items.sort(key=lambda x: x["created_at"], reverse=True)
+    return jsonify(items), 200
 
 
 def _load_solicitacao_para_doador(user_id, solicitacao_id):

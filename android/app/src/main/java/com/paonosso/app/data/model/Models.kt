@@ -86,6 +86,7 @@ data class Institution(
 // Appointments (achatado em /api/solicitacoes/agendamentos)
 data class Appointment(
     val id: String,
+    val tipo: String? = null, // "solicitacao" | "doacao" (quando AGUARDANDO)
     @SerializedName("doacao_id") val doacaoId: String?,
     val item: String?,
     val categoria: String?,
@@ -97,6 +98,20 @@ data class Appointment(
     @SerializedName("instituicao_nome") val instituicaoNome: String?,
     val status: String,
 )
+
+object AppointmentTipo {
+    const val SOLICITACAO = "solicitacao"
+    const val DOACAO = "doacao"
+}
+
+object AppointmentStatus {
+    const val AGUARDANDO = "AGUARDANDO" // sintetico, so existe para a agenda do doador
+    const val PENDENTE = "PENDENTE"
+    const val ACEITA = "ACEITA"
+    const val RECUSADA = "RECUSADA"
+    const val CANCELADA = "CANCELADA"
+    const val CONCLUIDA = "CONCLUIDA"
+}
 
 // Solicitacoes (raw, usado pela instituicao)
 data class Solicitacao(

@@ -66,8 +66,8 @@ Use as credenciais do seed:
 
 | tipo        | email                    | senha    |
 |-------------|--------------------------|----------|
-| Doador      | maria@example.com        | senha123 |
-| Instituição | sopa@solidaria.org       | senha123 |
+| Doador      | maria@paonosso.dev       | 123456   |
+| Instituição | sopa@paonosso.dev        | 123456   |
 
 Como doador você verá a Home com "Próximas Coletas", pode tocar no FAB para
 abrir o wizard de Nova Doação (3 steps), ver suas doações na Agenda e suas

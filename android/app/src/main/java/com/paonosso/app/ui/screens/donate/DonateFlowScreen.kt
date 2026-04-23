@@ -83,10 +83,12 @@ fun DonateFlowScreen(
     ) {
         TopBar(step = state.step, onBack = { if (state.step > 1) vm.back() else onClose() })
 
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 24.dp, vertical = 16.dp)) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 24.dp, vertical = 16.dp),
+        ) {
             AnimatedVisibility(
                 visible = state.step == 1,
                 enter = fadeIn() + slideInVertically(),
