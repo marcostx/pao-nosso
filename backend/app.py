@@ -6,6 +6,7 @@ Aplicação Flask principal
 import os
 
 from flask import Flask, jsonify
+from sqlalchemy import inspect
 
 from config import config
 from extensions import db, init_extensions
@@ -17,6 +18,49 @@ from routes import (
     solicitacoes_bp,
     stats_bp,
 )
+
+# Tabelas obrigatorias verificadas no startup. Devem refletir os modelos em
+# `models/` — se voce adicionar uma nova tabela, lembre de atualizar aqui.
+_REQUIRED_TABLES = ("usuarios", "instituicoes", "doacoes", "solicitacoes")
+
+
+def _check_schema_health(app: Flask) -> None:
+    """Garante (em DEBUG) ou avisa (em prod) que as tabelas existem.
+
+    Evita o sintoma confuso de "500 + log so com SELECT + ROLLBACK" quando
+    o desenvolvedor esquece de rodar ``python init_db.py``. Em modo
+    desenvolvimento, cria silenciosamente as tabelas faltando — em
+    producao, apenas loga um warning sem mexer no schema.
+
+    Pulado em modo TESTING (cada fixture cria/destroi seu proprio schema
+    in-memory).
+    """
+    if app.config.get("TESTING"):
+        return
+    try:
+        with app.app_context():
+            existing = set(inspect(db.engine).get_table_names())
+            missing = [t for t in _REQUIRED_TABLES if t not in existing]
+            if missing and app.config.get("DEBUG"):
+                app.logger.info(
+                    "Schema incompleto em %s: criando tabelas faltando %s "
+                    "(modo DEBUG). Lembre de rodar `python scripts/seed_dev.py` "
+                    "se precisar de dados de exemplo.",
+                    app.config.get("SQLALCHEMY_DATABASE_URI"),
+                    missing,
+                )
+                db.create_all()
+                existing = set(inspect(db.engine).get_table_names())
+                missing = [t for t in _REQUIRED_TABLES if t not in existing]
+            if missing:
+                app.logger.warning(
+                    "Schema incompleto no banco (%s): faltam tabelas %s. "
+                    "Rode `python init_db.py` antes de usar a API.",
+                    app.config.get("SQLALCHEMY_DATABASE_URI"),
+                    missing,
+                )
+    except Exception:  # pragma: no cover - defensive (DB inacessivel etc.)
+        app.logger.exception("Falha ao inspecionar schema do banco")
 
 
 def create_app(config_name=None):
@@ -38,6 +82,8 @@ def create_app(config_name=None):
     app.register_blueprint(solicitacoes_bp)
     app.register_blueprint(instituicoes_bp)
     app.register_blueprint(stats_bp)
+
+    _check_schema_health(app)
 
     # Handler de erro global
     @app.errorhandler(404)
@@ -70,13 +116,9 @@ def create_app(config_name=None):
 
 
 if __name__ == "__main__":
+    # _check_schema_health (chamado dentro de create_app) ja cuida de criar
+    # as tabelas faltando em modo DEBUG e avisar caso contrario.
     app = create_app()
 
-    # Cria tabelas do banco de dados se não existirem
-    with app.app_context():
-        db.create_all()
-        print("✅ Banco de dados inicializado!")
-
-    # Inicia servidor
     print(f"🚀 Servidor rodando em http://{app.config['HOST']}:{app.config['PORT']}")
     app.run(host=app.config["HOST"], port=app.config["PORT"], debug=app.config["DEBUG"])
