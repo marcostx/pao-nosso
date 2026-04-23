@@ -10,7 +10,6 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 private val Context.dataStore by preferencesDataStore(name = "pao_nosso_prefs")
@@ -42,7 +41,7 @@ class TokenStore(private val context: Context) {
 
     init {
         scope.launch {
-            tokenFlow.onEach { cachedToken = it }.collect()
+            tokenFlow.collect { cachedToken = it }
         }
     }
 
