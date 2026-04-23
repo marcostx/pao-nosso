@@ -22,4 +22,11 @@ class AppointmentRepository(private val api: ApiService) {
     suspend fun conclude(id: String): Result<Solicitacao> = runCatching {
         api.concludeSolicitacao(id)
     }
+
+    /** Cancela uma Doacao "solta" (status AGUARDANDO na agenda do doador):
+     *  exclui a doacao no backend ja que ela nao tem solicitacao associada. */
+    suspend fun cancelDoacao(doacaoId: String): Result<Unit> = runCatching {
+        api.deleteDonation(doacaoId)
+        Unit
+    }
 }
